@@ -37,7 +37,7 @@ app.use(
         saveUninitialized: false,
         cookie: {
             expires: 1000 * 60 * 60 * 24,
-            sameSite: 'none'
+            sameSite: true
         },
     })
 );
@@ -45,7 +45,6 @@ app.use(
 app.post("/register", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-
     db.query(
         "INSERT INTO USR (email, password) VALUES (?,?)",
         [username, password],
