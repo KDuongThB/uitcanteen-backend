@@ -7,13 +7,13 @@ const cors = require("cors");
 
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
+const cookieSession = require("cookie-session");
 
 const db = mysql.createConnection({
     user: 'root',
     host: 'localhost',
     password: '',
-    database: 'UITCANTEEN'
+    database: 'uitcanteen'
 })
 
 app.use(express.json());
@@ -22,7 +22,7 @@ app.use(
     cors({
         origin: ["http://127.0.0.1:5173"],
         methods: ["GET", "POST"],
-        credentials: true,
+        credentials: true
     })
 );
 
@@ -30,13 +30,14 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
-    session({
+    cookieSession({
         key: "userId",
-        secret: "abcxyz",
-        resave: false,
+        secret: "subscribe",
+        reSave: false,
         saveUninitialized: false,
         cookie: {
             expires: 1000 * 60 * 60 * 24,
+            sameSite: true
         },
     })
 );
@@ -44,7 +45,6 @@ app.use(
 app.post("/register", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-
     db.query(
         "INSERT INTO USR (email, password) VALUES (?,?)",
         [username, password],
@@ -85,6 +85,6 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.listen(3001, ()=> {
+app.listen(3001, () => {
     console.log('por favor')
 })
