@@ -1,13 +1,12 @@
 const express = require('express');
-const app = express();
 const mysql = require('mysql');
-const bcrypt = require('bcrypt');
-
+const app = express();
 const cors = require("cors");
 
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const cookieSession = require("cookie-session");
+const session = require("express-session");
+const { query } = require('express');
 
 const db = mysql.createConnection({
     user: 'root',
@@ -30,28 +29,64 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
-    cookieSession({
+    session({
         key: "userId",
-        secret: "subscribe",
-        reSave: false,
+        secret: "abcxyz",
+        resave: false,
         saveUninitialized: false,
         cookie: {
-            expires: 1000 * 60 * 60 * 24,
-            sameSite: true
+            expires: 1000 * 60 * 60 * 24
         },
     })
 );
 
+app.get('/', (req, res) => {
+    session = req.session;
+    if (session.userId) {
+        res.send("Welcome User");
+    }
+    // else {
+    //      res.sendFile('view/index.html', {root:__dirname})
+    // }
+});
+
+app.post('/user', (req, res) => {
+    var myusername;
+    var mypassword;
+
+    if (req.body.username == myusername && req.body.password == mypassword) {
+        session = req.session;
+        session.userid = req.body.username;
+        console.log(req.session)
+        res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
+    }
+    else {
+        res.send('Invalid username or password');
+    }
+})
+
 app.post("/register", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    db.query(
-        "INSERT INTO USR (email, password) VALUES (?,?)",
-        [username, password],
-        (err, result) => {
-            if (err) { console.log(err) };
-            if (result) { console.log(result) };
-        })
+    db.query('SELECT FROM usr WHERE email = ?', username, (err, result) => {
+        if (err) { console.log({ err }) };
+        if (result.length > 0) {
+            res.send({ message: "Email already registered" });
+        }
+        else
+        {
+            db.query(
+                "INSERT INTO usr (email, password) VALUES (?,?)",
+                [username, password],
+                (err, result) => {
+                    if (err) { console.log(err) };
+                    if (result) {
+                        console.log(result);
+                    };
+                })
+        }
+    });
+   
 });
 
 app.get("/login", (req, res) => {
@@ -66,7 +101,7 @@ app.post("/login", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    db.query('SELECT * FROM USR WHERE email = ?;', username, (err, result) => {
+    db.query('SELECT * FROM usr WHERE email = ?;', username, (err, result) => {
         if (err) {
             res.send({ err: err });
         }
@@ -85,6 +120,11 @@ app.post("/login", (req, res) => {
     });
 });
 
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+});
+
 app.listen(3001, () => {
-    console.log('por favor')
+    console.log('listening on port 3001')
 })
