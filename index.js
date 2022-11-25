@@ -43,55 +43,64 @@ app.use(
 app.get('/', (req, res) => {
     session = req.session;
     if (session.userId) {
-        res.send("Welcome User");
-    }
-    // else {
-    //      res.sendFile('view/index.html', {root:__dirname})
-    // }
-});
-
-app.post('/user', (req, res) => {
-    var myusername;
-    var mypassword;
-
-    if (req.body.username == myusername && req.body.password == mypassword) {
-        session = req.session;
-        session.userid = req.body.username;
-        console.log(req.session)
-        res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
+        res.send({
+            loggedIn: true,
+            user: req.session.user,
+            message: "Welcome User"
+        });
     }
     else {
-        res.send('Invalid username or password');
+        res.send({ loggedIn: false });
+        //  res.sendFile('view/index.html', {root:__dirname})
     }
-})
+});
+
+// app.post('/user', (req, res) => {
+//     var myusername;
+//     var mypassword;
+
+//     if (req.body.username == myusername && req.body.password == mypassword) {
+//         session = req.session;
+//         session.userid = req.body.username;
+//         console.log(req.session)
+//         res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
+//     }
+//     else {
+//         res.send('Invalid username or password');
+//     }
+// })
 
 app.post("/register", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    db.query('SELECT FROM usr WHERE email = ?', username, (err, result) => {
-        if (err) { console.log({ err }) };
+    db.query('SELECT * FROM usr WHERE email = ?', username, (err, result) => {
         if (result.length > 0) {
+            console.log(result);
             res.send({ message: "Email already registered" });
+            return;
         }
-        else
-        {
-            db.query(
-                "INSERT INTO usr (email, password) VALUES (?,?)",
-                [username, password],
-                (err, result) => {
-                    if (err) { console.log(err) };
-                    if (result) {
-                        console.log(result);
-                    };
-                })
-        }
+        db.query(
+            "INSERT INTO usr (email, password) VALUES (?,?)",
+            [username, password],
+            (err, result) => {
+                if (err) { console.log(err) };
+                if (result) {
+                    console.log(result);
+                    res.send({ message: "Registered successfully!" })
+                };
+            })
     });
-   
+
 });
 
 app.get("/login", (req, res) => {
     if (req.session.user) {
-        res.send({ loggedIn: true, user: req.session.user });
+        console.log(req.session.user);
+        res.send({
+            message: "already logged in",
+            loggedIn: true,
+            user: req.session.user
+        });
     } else {
         res.send({ loggedIn: false });
     }
