@@ -37,7 +37,6 @@ app.use(
             maxAge: 1000 * 60 * 60 * 24,
             sameSite: true,
         },
-
     })
 );
 
@@ -47,7 +46,7 @@ app.get('/', (req, res) => {
         res.send({
             loggedIn: true,
             user: req.session.user,
-            message: "Welcome User"
+            message: "Welcome " + req.session.user
         });
     }
     else {
@@ -55,21 +54,6 @@ app.get('/', (req, res) => {
         //  res.sendFile('view/index.html', {root:__dirname})
     }
 });
-
-// app.post('/user', (req, res) => {
-//     var myusername;
-//     var mypassword;
-
-//     if (req.body.username == myusername && req.body.password == mypassword) {
-//         session = req.session;
-//         session.userid = req.body.username;
-//         console.log(req.session)
-//         res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
-//     }
-//     else {
-//         res.send('Invalid username or password');
-//     }
-// })
 
 app.post("/register", (req, res) => {
     const userData = {
@@ -79,26 +63,29 @@ app.post("/register", (req, res) => {
     }
     if (userData.password != userData.confirmPassword) {
         res.send({ message: "password not matched" })
-    }
-    db.query('SELECT * FROM usr WHERE email = ?', userData.email, (err, result) => {
-        if (err) {
-            console.log(err);
-            db.query("INSERT INTO usr (email, password) VALUES (?,?)",
-                [userData.email, userData.password],
-                (err, result) => {
-                    if (err) { console.log(err) };
-                    if (result) {
-                        console.log(result);
-                        res.send({ message: "Registered successfully!" })
-                    };
-                })
-        }
+    } else {
+        db.query('SELECT * FROM usr WHERE email = ?', userData.email, (err, result) => {
+            if (err) { 
+                throw (err);
+            }
 
-        if (result.length > 0) {
-            console.log(result);
-            res.send({ message: "Email already registered" });
-        }
-    });
+            if (result.length > 0) {
+                console.log(result);
+                res.send({ message: "Email already registered" });
+            }
+            else {
+                db.query("INSERT INTO usr (email, password) VALUES (?,?)",
+                    [userData.email, userData.password],
+                    (err, result) => {
+                        if (err) { console.log(err) };
+                        if (result) {
+                            console.log(result);
+                            res.send({ message: "Registered successfully!" });
+                        };
+                    })
+            }
+        });
+    }
 });
 
 app.get("/login", (req, res) => {
@@ -113,7 +100,7 @@ app.get("/login", (req, res) => {
         res.send({
             loggedIn: false,
             message: "not logged in",
-            
+
         });
     }
 });
