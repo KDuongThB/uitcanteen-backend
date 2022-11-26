@@ -3,10 +3,9 @@ const mysql = require('mysql');
 const app = express();
 const cors = require("cors");
 
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");  
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const { query } = require('express');
 
 const db = mysql.createConnection({
     user: 'root',
@@ -21,15 +20,17 @@ app.use(
     cors({
         origin: ["http://127.0.0.1:5173"],
         methods: ["GET", "POST"],
-        credentials: true
+        credentials: true,
     })
 );
+
+app.use(cookieParser())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
     session({
-        key: "userId",
+        key: "connect.sid",
         secret: "abcxyz",
         resave: false,
         saveUninitialized: false,
@@ -37,21 +38,38 @@ app.use(
             maxAge: 1000 * 60 * 60 * 24,
             sameSite: true,
         },
+        secure: false,
     })
 );
 
 app.get('/', (req, res) => {
-    session = req.session;
-    if (session.userId) {
+    if (req.session.user) {
+        console.log("req.session.user:" + req.session.user)
         res.send({
             loggedIn: true,
-            user: req.session.user,
             message: "Welcome " + req.session.user
         });
     }
     else {
+        console.log("req.session.user:" + req.session.user)
         res.send({ loggedIn: false });
-        //  res.sendFile('view/index.html', {root:__dirname})
+    }
+});
+
+app.get("/login", (req, res) => {
+    if (req.session.user) {
+        console.log("req.session.user:" + req.session.user);
+        res.send({
+            loggedIn: true,
+            message: "already logged in",
+            user: req.session.user
+        });
+    } else {
+        console.log("req.session.user:" + req.session.user);
+        res.send({
+            loggedIn: false,
+            message: "not logged in", 
+        });
     }
 });
 
@@ -88,38 +106,23 @@ app.post("/register", (req, res) => {
     }
 });
 
-app.get("/login", (req, res) => {
-    if (req.session.user) {
-        console.log(req.session.user);
-        res.send({
-            loggedIn: true,
-            message: "already logged in",
-            user: req.session.user
-        });
-    } else {
-        res.send({
-            loggedIn: false,
-            message: "not logged in",
-
-        });
-    }
-});
-
 app.post("/login", (req, res) => {
-    const userData = {
+    const loginData = {
         email: req.body.username,
         password: req.body.password,
     }
-    db.query('SELECT * FROM usr WHERE email = ?;', userData.email, (err, result) => {
+    
+    db.query('SELECT * FROM usr WHERE email = ?;', loginData.email, (err, result) => {
         if (err) {
             console.log(err);
             res.send({ err: err });
         }
         if (result.length > 0) {
-            if (userData.password == result[0].password) {
+            if (loginData.password == result[0].password) {
                 req.session.user = result[0];
                 console.log(req.session.user);
-                res.send(result[0]);
+                req.session.save();
+                res.send(req.session.user);
             } else {
                 res.send({ message: "Wrong login info" });
             }
@@ -131,7 +134,7 @@ app.post("/login", (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/');
+    return res.redirect('/');
 });
 
 app.listen(3001, () => {
