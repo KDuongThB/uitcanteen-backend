@@ -1,11 +1,14 @@
 const express = require('express');
 const mysql = require('mysql');
-const app = express();
 const cors = require("cors");
-
-const bodyParser = require("body-parser");  
-const cookieParser = require("cookie-parser");
+require("dotenv").config();
+const bodyParser = require("body-parser");
+// const cookieParser = require("cookie-parser");
 const session = require("express-session");
+
+const app = express();
+
+const mysqlStore = require('express-mysql-session')(session);
 
 const db = mysql.createConnection({
     user: 'root',
@@ -14,45 +17,61 @@ const db = mysql.createConnection({
     database: 'uitcanteen'
 })
 
+const options = {
+    connectionLimit: 10,
+    password: "",
+    user: "root",
+    database: "uitcanteen",
+    host: 'localhost',
+    port: '3306',
+    createDatabaseTable: true
+
+}
+
+const sessionStore = new mysqlStore(options);
+
+app.use(session({
+        name: "uit_sess",
+        key: "userId",
+        secret: "abcxyz",
+        resave: false,
+        saveUninitialized: false,
+        store: sessionStore,
+    })
+);
+
 app.use(express.json());
 
 app.use(
     cors({
         origin: ["http://127.0.0.1:5173"],
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST", "PUT"],
         credentials: true,
     })
 );
 
-app.use(cookieParser())
+// app.use(cookieParser())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(
-    session({
-        key: "connect.sid",
-        secret: "abcxyz",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24,
-            sameSite: true,
-        },
-        secure: false,
-    })
-);
+app.get('/', async (req, res) => {
+    try {
+        if (req.session.user) {
+            console.log("req.session.user:" + req.session.user)
+            res.send({
+                loggedIn: true,
+                message: "Welcome " + req.session.user,
+                user: req.session.user
+            });
+        }
 
-app.get('/', (req, res) => {
-    if (req.session.user) {
-        console.log("req.session.user:" + req.session.user)
-        res.send({
-            loggedIn: true,
-            message: "Welcome " + req.session.user
-        });
-    }
-    else {
-        console.log("req.session.user:" + req.session.user)
-        res.send({ loggedIn: false });
+        else {
+            console.log("req.session.user:" + req.session.user)
+            res.send({ loggedIn: false });
+        }
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
     }
 });
 
@@ -68,7 +87,7 @@ app.get("/login", (req, res) => {
         console.log("req.session.user:" + req.session.user);
         res.send({
             loggedIn: false,
-            message: "not logged in", 
+            message: "not logged in",
         });
     }
 });
@@ -83,7 +102,7 @@ app.post("/register", (req, res) => {
         res.send({ message: "password not matched" })
     } else {
         db.query('SELECT * FROM usr WHERE email = ?', userData.email, (err, result) => {
-            if (err) { 
+            if (err) {
                 throw (err);
             }
 
@@ -106,12 +125,13 @@ app.post("/register", (req, res) => {
     }
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", express.urlencoded({ extended: false }), (req, res) => {
     const loginData = {
         email: req.body.username,
         password: req.body.password,
-    }
-    
+    };
+    var authUser = {};
+
     db.query('SELECT * FROM usr WHERE email = ?;', loginData.email, (err, result) => {
         if (err) {
             console.log(err);
@@ -119,10 +139,8 @@ app.post("/login", (req, res) => {
         }
         if (result.length > 0) {
             if (loginData.password == result[0].password) {
-                req.session.user = result[0];
-                console.log(req.session.user);
-                req.session.save();
-                res.send(req.session.user);
+                authUser = result[0];
+                console.log(authUser);
             } else {
                 res.send({ message: "Wrong login info" });
             }
@@ -130,6 +148,12 @@ app.post("/login", (req, res) => {
             res.send({ message: "Email is not registered" });
         };
     });
+    req.session.user = authUser;
+
+    req.session.save(function (err) {
+        if (err) return (err);
+        res.send(req.session.user)
+    })
 });
 
 app.get('/logout', (req, res) => {
@@ -137,6 +161,7 @@ app.get('/logout', (req, res) => {
     return res.redirect('/');
 });
 
-app.listen(3001, () => {
+const PORT = process.env.APP_PORT;
+app.listen(PORT, () => {
     console.log('listening on port 3001')
 })
