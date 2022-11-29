@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 22, 2022 at 05:30 PM
+-- Generation Time: Nov 29, 2022 at 09:24 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -16,8 +16,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-CREATE DATABASE uitcanteen;
-USE uitcanteen;
 
 --
 -- Database: `uitcanteen`
@@ -219,6 +217,36 @@ CREATE TABLE `payment` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `session_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `expires` int(11) UNSIGNED NOT NULL,
+  `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
+('4oYXyQiij0NlpQMbH8eykcS2OLU7ak68', 1669738351, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:12:31.067Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('6y61klf5dI8Ylm2X9MV81VVhVO0VAbJO', 1669738046, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:07:25.862Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('Ancu3gBcDfcBT1uyhINyfZ-wv54G1PIF', 1669737995, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:06:35.300Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('JiqTDvskQ23PNAE7uP22C-QI6jVfWQxo', 1669738670, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:17:49.975Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('KGib0vvXEhIPOSuz4koa3IwqN0BSBhbG', 1669736041, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T15:34:00.699Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('Qel7p24OcfH-IsKwoOzm0NScadIPjYtW', 1669738417, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:13:37.173Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('ROKO-K3oqq_8Ba0utsiqv8vonmvSbJeb', 1669738878, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:21:18.080Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('TGjSK4tALj3Ua-6Z7YYE4m_POBOb8_1q', 1669738682, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:18:02.012Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('_GvLlW8zLqveNkrfEHKclhUzTzEsPZJj', 1669738121, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:08:40.775Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('_SEda8a8fIVjdH8MoZOj9PVUoOh-B1c1', 1669738064, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:07:43.758Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('kicdAQpj_LhjL8kNq-eYZF_avBm-Mn-5', 1669736616, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T15:43:35.837Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}'),
+('yO4u8W9AAeRo7M58IGLVLTvvMpcRIKcA', 1669738504, '{\"cookie\":{\"originalMaxAge\":28800000,\"expires\":\"2022-11-29T16:15:04.402Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":true},\"authenticated\":true,\"user\":{\"userId\":1,\"studentId\":null,\"password\":\"123456\",\"email\":\"khanhgamu02@gmail.com\",\"firstName\":null,\"lastName\":null,\"mobile\":null,\"creatAt\":\"2022-11-22T16:25:32.000Z\",\"updateAt\":\"2022-11-22T16:25:32.000Z\"}}');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `usr`
 --
 
@@ -229,7 +257,7 @@ CREATE TABLE `usr` (
   `email` varchar(64) NOT NULL,
   `firstName` varchar(64) DEFAULT NULL,
   `lastName` varchar(64) DEFAULT NULL,
-  `mobile` varchar(11) DEFAULT NULL,
+  `mobile` varchar(10) DEFAULT NULL,
   `creatAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updateAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -239,7 +267,11 @@ CREATE TABLE `usr` (
 --
 
 INSERT INTO `usr` (`userId`, `studentId`, `password`, `email`, `firstName`, `lastName`, `mobile`, `creatAt`, `updateAt`) VALUES
-(1, NULL, '123456', 'khanhgamu02@gmail.com', NULL, NULL, NULL, '2022-11-22 23:25:32', '2022-11-22 23:25:32');
+(1, NULL, '123456', 'khanhgamu02@gmail.com', NULL, NULL, NULL, '2022-11-22 23:25:32', '2022-11-22 23:25:32'),
+(2, NULL, '123456', 'khanhgamu01@gmail.com', NULL, NULL, NULL, '2022-11-26 17:34:03', '2022-11-26 17:34:03'),
+(3, NULL, '123456', 'khanhgamu00@gmail.com', NULL, NULL, NULL, '2022-11-26 17:34:33', '2022-11-26 17:34:33'),
+(4, NULL, '123456', 'khanhgamu04@gmail.com', NULL, NULL, NULL, '2022-11-26 17:35:02', '2022-11-26 17:35:02'),
+(5, NULL, '123456', 'khanhgamu08@gmail.com', NULL, NULL, NULL, '2022-11-29 13:56:55', '2022-11-29 13:56:55');
 
 --
 -- Indexes for dumped tables
@@ -309,6 +341,12 @@ ALTER TABLE `payment`
   ADD PRIMARY KEY (`paymentId`);
 
 --
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`session_id`);
+
+--
 -- Indexes for table `usr`
 --
 ALTER TABLE `usr`
@@ -376,7 +414,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `usr`
 --
 ALTER TABLE `usr`
-  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
