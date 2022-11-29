@@ -176,5 +176,5 @@ app.get('/ingredient', (req, res) => {
 
 const PORT = process.env.APP_PORT || 3001;
 app.listen(PORT, () => {
-    console.log('listening on port 3001')
+    console.log('listening on port ' + PORT)
 })
