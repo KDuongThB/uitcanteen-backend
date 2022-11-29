@@ -139,11 +139,32 @@ app.post("/login", (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy();
     sess = {};
-    res.send({message: "you have logged out!"})
+    res.send({ message: "you have logged out!" })
 });
 
-app.get('/user', (req,res) => {
+app.get('/user', (req, res) => {
+    if (sess.authenticated && sess.user)
+        res.send({ user: sess.user });
+    else
+        res.send({ message: "not logged in" })
+})
 
+app.get('/menu', (req, res) => {
+    db.query('SELECT * from dish WHERE 1', (err, result) => {
+        if (err)
+            throw (err);
+        if (result)
+            res.send(result);
+    })
+})
+
+app.get('/ingredient', (req, res) => {
+    db.query('SELECT * from ingredient WHERE 1', (err, result) => {
+        if (err)
+            throw (err);
+        if (result)
+            res.send(result);
+    })
 })
 
 const PORT = process.env.APP_PORT;
