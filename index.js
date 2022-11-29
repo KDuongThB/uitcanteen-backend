@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
-// const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
 const app = express();
@@ -28,16 +28,18 @@ const sessionStore = new mysqlStore({
 });
 
 app.use(session({
-        name: "uit_sess",
-        key: "userId",
-        secret: "abcxyz",
-        resave: false,
-        saveUninitialized: false,
-        store: sessionStore,
-    })
+    name: "uit_sess",
+    secret: "abcxyz",
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+        maxAge: 24 * 60 * 60 * 10,
+        sameSite: true,
+        secure: false
+    }
+})
 );
-
-app.use(express.json());
 
 app.use(
     cors({
@@ -52,104 +54,74 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', async (req, res) => {
-    try {
-        if (req.session.user) {
-            console.log("req.session.user:" + req.session.user)
-            res.send({
-                loggedIn: true,
-                message: "Welcome " + req.session.user,
-                user: req.session.user
-            });
-        }
-
-        else {
-            console.log("req.session.user:" + req.session.user)
-            res.send({ loggedIn: false });
-        }
-    } catch (e) {
-        console.log(e);
-        res.sendStatus(500);
-    }
+    res.send('todo')
 });
 
 app.get("/login", (req, res) => {
-    if (req.session.user) {
-        console.log("req.session.user:" + req.session.user);
-        res.send({
-            loggedIn: true,
-            message: "already logged in",
-            user: req.session.user
-        });
-    } else {
-        console.log("req.session.user:" + req.session.user);
-        res.send({
-            loggedIn: false,
-            message: "not logged in",
-        });
-    }
+    res.send('todo')
 });
 
 app.post("/register", (req, res) => {
     const userData = {
         email: req.body.username,
         password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
     }
-    if (userData.password != userData.confirmPassword) {
-        res.send({ message: "password not matched" })
-    } else {
-        db.query('SELECT * FROM usr WHERE email = ?', userData.email, (err, result) => {
-            if (err) {
-                throw (err);
-            }
+    db.query('SELECT * FROM usr WHERE email = ?', userData.email, (err, result) => {
+        if (err) {
+            throw (err);
+        }
 
-            if (result.length > 0) {
-                console.log(result);
-                res.send({ message: "Email already registered" });
-            }
-            else {
-                db.query("INSERT INTO usr (email, password) VALUES (?,?)",
-                    [userData.email, userData.password],
-                    (err, result) => {
-                        if (err) { console.log(err) };
-                        if (result) {
-                            console.log(result);
-                            res.send({ message: "Registered successfully!" });
-                        };
-                    })
-            }
-        });
-    }
+        if (result.length > 0) {
+            console.log(result);
+            res.send({ message: "Email already registered" });
+        }
+        else {
+            db.query("INSERT INTO usr (email, password) VALUES (?,?)",
+                [userData.email, userData.password],
+                (err, result) => {
+                    if (err) { console.log(err) };
+                    if (result) {
+                        console.log(result);
+                        res.send({ message: "Registered successfully!" });
+                    };
+                })
+        }
+    });
 });
 
-app.post("/login", express.urlencoded({ extended: false }), (req, res) => {
+app.post("/login", (req, res) => {
     const loginData = {
         email: req.body.username,
         password: req.body.password,
     };
-    var authUser = {};
-
-    db.query('SELECT * FROM usr WHERE email = ?;', loginData.email, (err, result) => {
+    if(req.session.authenticated)
+    {
+        res.send('Authenticated')
+    }
+    else
+    {
+    db.query('SELECT * FROM `usr` WHERE `email` = ?', loginData.email, (err, result) => {
         if (err) {
             console.log(err); 
             res.send({ err: err });
         }
         if (result.length > 0) {
-            if (loginData.password == result[0].password) {
-                authUser = result[0];
-                console.log(authUser);
-            } else {
-                res.send({ message: "Wrong login info" });
+            const userData = result[0];
+            if (loginData.password === userData.password) {
+                console.log('login query works');
+                res.send(userData)
             }
-        } else {
-            res.send({ message: "Email is not registered" });
+            else {
+                res.status(401).send({ message: "Wrong password" });
+            }
+        }
+        else {
+            res.status(401).send({ message: "Email is not registered" });
         };
     });
-    req.session.user = authUser;
-
+}
     req.session.save(function (err) {
         if (err) return (err);
-        res.send(req.session.user)
     })
 });
 
