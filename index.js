@@ -5,27 +5,33 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const e = require('express');
 
 const app = express();
 
 const mysqlStore = require('express-mysql-session')(session);
 
-const db = mysql.createConnection({
-    user: 'root',
-    host: 'localhost',
-    password: '',
-    database: 'uitcanteen'
-})
-
-const sessionStore = new mysqlStore({
-    connectionLimit: 10,
-    password: "",
-    user: "root",
-    database: "uitcanteen",
-    host: 'localhost',
-    port: '3306',
-    createDatabaseTable: true
-});
+let db, sessionStore;
+if (process.env.JAWSDB_URL) {
+    db.mysql.createConnection(process.env.JAWSDB_URL);
+}
+else {
+    db = mysql.createConnection({
+        user: 'root',
+        host: 'localhost',
+        password: '',
+        database: 'uitcanteen'
+    })
+    sessionStore = new mysqlStore({
+        connectionLimit: 10,
+        password: "",
+        user: "root",
+        database: "uitcanteen",
+        host: 'localhost',
+        port: '3306',
+        createDatabaseTable: true
+    });
+}
 
 app.use(session({
     name: "uit_sess",
@@ -47,6 +53,7 @@ app.use(
         credentials: true,
     })
 );
+
 app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
