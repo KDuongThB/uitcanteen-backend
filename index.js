@@ -13,7 +13,7 @@ const mysqlStore = require('express-mysql-session')(session);
 
 let db, sessionStore;
 if (process.env.JAWSDB_URL) {
-    db.mysql.createConnection(process.env.JAWSDB_URL);
+    db = mysql.createConnection(process.env.JAWSDB_URL);
 }
 else {
     db = mysql.createConnection({
