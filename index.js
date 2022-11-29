@@ -142,6 +142,10 @@ app.get('/logout', (req, res) => {
     res.send({message: "you have logged out!"})
 });
 
+app.get('/user', (req,res) => {
+
+})
+
 const PORT = process.env.APP_PORT;
 app.listen(PORT, () => {
     console.log('listening on port 3001')
