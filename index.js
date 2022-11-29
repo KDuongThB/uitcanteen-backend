@@ -5,14 +5,14 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const e = require('express');
 
 const app = express();
 
 const mysqlStore = require('express-mysql-session')(session);
 
-let db, sessionStore;
-if (process.env.JAWSDB_URL) {
+let db;
+if(process.env.JAWSDB_URL)
+{
     db = mysql.createConnection(process.env.JAWSDB_URL);
 }
 else {
@@ -22,15 +22,15 @@ else {
         password: '',
         database: 'uitcanteen'
     })
-    sessionStore = new mysqlStore({
-        connectionLimit: 10,
-        password: "",
-        user: "root",
-        database: "uitcanteen",
-        host: 'localhost',
-        port: '3306',
-        createDatabaseTable: true
-    });
+    // sessionStore = new mysqlStore({
+    //     connectionLimit: 10,
+    //     password: "",
+    //     user: "root",
+    //     database: "uitcanteen",
+    //     host: 'localhost',
+    //     port: '3306',
+    //     createDatabaseTable: true
+    // });
 }
 
 app.use(session({
@@ -38,7 +38,7 @@ app.use(session({
     secret: "abcxyz",
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,
+    // store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
@@ -174,7 +174,7 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-const PORT = process.env.APP_PORT;
+const PORT = process.env.APP_PORT || 3001;
 app.listen(PORT, () => {
     console.log('listening on port 3001')
 })
