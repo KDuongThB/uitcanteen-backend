@@ -34,7 +34,7 @@ app.use(session({
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-        maxAge: 24 * 60 * 60 * 10,
+        maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
         secure: false
     }
@@ -43,32 +43,40 @@ app.use(session({
 
 app.use(
     cors({
-        origin: ["http://127.0.0.1:5173"],
-        methods: ["GET", "POST", "PUT"],
+        origin: "http://127.0.0.1:5173",
         credentials: true,
     })
 );
-
-app.use(cookieParser())
+app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/', async (req, res) => {
-    res.send('todo')
+app.use(cookieParser());
+
+var sess = {};
+
+app.get('/', (req, res) => {
+    sess = req.session;
+    if (sess.authenticated)
+        res.send({ loggedIn: true, user: sess.user })
+    else
+        res.send({ loggedIn: false })
 });
 
 app.get("/login", (req, res) => {
-    res.send('todo')
+    if (sess.authenticated)
+        res.send({ loggedIn: true, user: sess.user })
+    else
+        res.send({ loggedIn: false })
 });
 
 app.post("/register", (req, res) => {
-    const userData = {
-        email: req.body.username,
-        password: req.body.password,
-    }
-    db.query('SELECT * FROM usr WHERE email = ?', userData.email, (err, result) => {
+    const email = req.body.username;
+    const password = req.body.password;
+    console.log("email: " + email)
+    db.query("SELECT * FROM usr WHERE email = ?;", email, (err, result) => {
         if (err) {
-            throw (err);
+            console.log(err);
         }
 
         if (result.length > 0) {
@@ -77,7 +85,7 @@ app.post("/register", (req, res) => {
         }
         else {
             db.query("INSERT INTO usr (email, password) VALUES (?,?)",
-                [userData.email, userData.password],
+                [email, password],
                 (err, result) => {
                     if (err) { console.log(err) };
                     if (result) {
@@ -90,44 +98,48 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+    sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
     };
-    if(req.session.authenticated)
-    {
-        res.send('Authenticated')
+    if (sess.authenticated) {
+        res.send({ loggedIn: true, user: sess.user })
     }
-    else
-    {
-    db.query('SELECT * FROM `usr` WHERE `email` = ?', loginData.email, (err, result) => {
-        if (err) {
-            console.log(err); 
-            res.send({ err: err });
-        }
-        if (result.length > 0) {
-            const userData = result[0];
-            if (loginData.password === userData.password) {
-                console.log('login query works');
-                res.send(userData)
+    else {
+        db.query('SELECT * FROM usr WHERE email = ?', loginData.email, (err, result) => {
+            if (err) {
+                console.log(err);
+                res.send({ err: err });
+            }
+            if (result.length > 0) {
+                const userData = result[0];
+                if (loginData.password === userData.password) {
+                    console.log('login query works\n', userData);
+                    sess.authenticated = true;
+                    sess.user = userData;
+                    res.send(userData);
+                }
+                else {
+                    res.status(401).send({ message: "Wrong password" });
+                }
             }
             else {
-                res.status(401).send({ message: "Wrong password" });
-            }
-        }
-        else {
-            res.status(401).send({ message: "Email is not registered" });
-        };
-    });
-}
+                res.status(401).send({ message: "Email is not registered" });
+            };
+        });
+    }
     req.session.save(function (err) {
-        if (err) return (err);
+        if (err) {
+            console.log(err); return (err);
+        }
     })
 });
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    return res.redirect('/');
+    sess = {};
+    res.send({message: "you have logged out!"})
 });
 
 const PORT = process.env.APP_PORT;
