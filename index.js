@@ -17,7 +17,7 @@ const db = mysql.createConnection({
     database: 'uitcanteen'
 })
 
-const options = {
+const sessionStore = new mysqlStore({
     connectionLimit: 10,
     password: "",
     user: "root",
@@ -25,10 +25,7 @@ const options = {
     host: 'localhost',
     port: '3306',
     createDatabaseTable: true
-
-}
-
-const sessionStore = new mysqlStore(options);
+});
 
 app.use(session({
         name: "uit_sess",
@@ -50,7 +47,7 @@ app.use(
     })
 );
 
-// app.use(cookieParser())
+app.use(cookieParser())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -134,7 +131,7 @@ app.post("/login", express.urlencoded({ extended: false }), (req, res) => {
 
     db.query('SELECT * FROM usr WHERE email = ?;', loginData.email, (err, result) => {
         if (err) {
-            console.log(err);
+            console.log(err); 
             res.send({ err: err });
         }
         if (result.length > 0) {
