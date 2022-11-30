@@ -25,7 +25,7 @@ else {
     })
 }
 
-var whitelist = ['http://canteen-uit.netlify.app', 'http://localhost:5173']
+var whitelist = ['https://canteen-uit.netlify.app', 'http://localhost:5173']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -34,7 +34,7 @@ var corsOptions = {
       callback(new Error('Not allowed by CORS'))
     }
   },
-  Credential: true
+  credentials: true
 }
 
 app.use(cors(corsOptions))
