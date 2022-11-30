@@ -54,7 +54,7 @@ app.use(session({
 
 app.use(
     cors({
-        origin: "http://127.0.0.1:5173",
+        origin: "https://canteen-uit.netlify.app/",
         credentials: true,
     })
 );
