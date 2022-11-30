@@ -25,25 +25,18 @@ else {
     })
 }
 
-app.use(
-    cors({
-        origin: "https://canteen-uit.netlify.app",
-        credentials: true,
-    })
-);
+var whitelist = ['http://canteen-uit.netlify.app', 'http://localhost:5173']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
-app.use(function (req, res, next) {
-    var whitelist = ['localhost:5173', 'https://canteen-uit.netlify.app']
-    var host = req.get('host');
-
-    whitelist.forEach(function (val, key) {
-        if (host.indexOf(val) > -1) {
-            res.setHeader('Access-Control-Allow-Origin', host);
-        }
-    })
-
-    next();
-});
+app.use(cors(corsOptions))
 
 isProduction = process.env.PRODUCTION;
 
