@@ -181,6 +181,24 @@ app.get('/menu', (req, res) => {
     })
 })
 
+app.get('/menu/main', (req, res) => {
+    db.query('SELECT * from dish WHERE dishTypeId = 1', (err, result) => {
+        if (err)
+            throw (err);
+        if (result)
+            res.send({menu: result});
+    })
+})
+
+app.get('/menu/side', (req, res) => {
+    db.query('SELECT * from dish WHERE dishTypeId = 2', (err, result) => {
+        if (err)
+            throw (err);
+        if (result)
+            res.send({menu: result});
+    })
+})
+
 app.get('/ingredient', (req, res) => {
     db.query('SELECT * from ingredient WHERE 1', (err, result) => {
         if (err)
