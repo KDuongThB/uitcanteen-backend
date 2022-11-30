@@ -59,7 +59,7 @@ app.use(
     })
 );
 
-app.use(express.json());g
+app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
