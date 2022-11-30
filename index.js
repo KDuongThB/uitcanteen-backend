@@ -10,39 +10,41 @@ const app = express();
 
 const mysqlStore = require('express-mysql-session')(session);
 
-let db;
-if(process.env.JAWSDB_URL)
-{
+let db, sessionStore;
+if (process.env.JAWSDB_URL) {
     db = mysql.createConnection(process.env.JAWSDB_URL);
+    sessionStore = new mysqlStore(process.env.JAWSDB_URL);
 }
 else {
     db = mysql.createConnection({
         user: 'root',
         host: 'localhost',
+        port: '3306',
         password: '',
         database: 'uitcanteen'
     })
-    // sessionStore = new mysqlStore({
-    //     connectionLimit: 10,
-    //     password: "",
-    //     user: "root",
-    //     database: "uitcanteen",
-    //     host: 'localhost',
-    //     port: '3306',
-    //     createDatabaseTable: true
-    // });
+    sessionStore = new mysqlStore({
+        connectionLimit: 10,
+        password: "",
+        user: "root",
+        database: "uitcanteen",
+        host: 'localhost',
+        port: '3306',
+        createDatabaseTable: true
+    });
 }
 
+isProduction = process.env.PRODUCTION;
 app.use(session({
     name: "uit_sess",
     secret: "abcxyz",
     resave: false,
     saveUninitialized: false,
-    // store: sessionStore,
+    store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
-        secure: false
+        secure: isProduction
     }
 })
 );
@@ -174,7 +176,7 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-const PORT = process.env.APP_PORT || 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log('listening on port ' + PORT)
 })
