@@ -188,7 +188,9 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-app.get('/order',(req,res))
+app.get('/order',(req,res) => {
+    
+})
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log('listening on port ' + PORT) })
