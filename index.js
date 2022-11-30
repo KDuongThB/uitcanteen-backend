@@ -46,7 +46,9 @@ app.use(session({
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
-    }
+        secure: true 
+    },
+    httpOnly: false
 })
 );
 
@@ -189,7 +191,7 @@ app.get('/ingredient', (req, res) => {
 })
 
 app.get('/order',(req,res) => {
-    
+    res.send('todo')
 })
 
 const PORT = process.env.PORT || 3001;
