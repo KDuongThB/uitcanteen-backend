@@ -15,6 +15,7 @@ if (process.env.JAWSDB_URL) {
     db = mysql.createConnection(process.env.JAWSDB_URL);
     sessionStore = new mysqlStore(process.env.JAWSDB_URL);
 }
+
 else {
     db = mysql.createConnection({
         user: 'root',
@@ -35,6 +36,7 @@ else {
 }
 
 isProduction = process.env.PRODUCTION;
+
 app.use(session({
     name: "uit_sess",
     secret: "abcxyz",
@@ -80,30 +82,34 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    const email = req.body.username;
-    const password = req.body.password;
-    console.log("email: " + email)
-    db.query("SELECT * FROM usr WHERE email = ?;", email, (err, result) => {
-        if (err) {
-            console.log(err);
-        }
+    if (sess.authenticated)
+        res.send({ loggedIn: true, user: sess.user })
+    else {
+        const email = req.body.username;
+        const password = req.body.password;
+        console.log("email: " + email)
+        db.query("SELECT * FROM usr WHERE email = ?;", email, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
 
-        if (result.length > 0) {
-            console.log(result);
-            res.send({ message: "Email already registered" });
-        }
-        else {
-            db.query("INSERT INTO usr (email, password) VALUES (?,?)",
-                [email, password],
-                (err, result) => {
-                    if (err) { console.log(err) };
-                    if (result) {
-                        console.log(result);
-                        res.send({ message: "Registered successfully!" });
-                    };
-                })
-        }
-    });
+            if (result.length > 0) {
+                console.log(result);
+                res.send({ message: "Email already registered" });
+            }
+            else {
+                db.query("INSERT INTO usr (email, password) VALUES (?,?)",
+                    [email, password],
+                    (err, result) => {
+                        if (err) { console.log(err) };
+                        if (result) {
+                            console.log(result);
+                            res.send({ message: "Registered successfully!" });
+                        };
+                    })
+            }
+        });
+    }
 });
 
 app.post("/login", (req, res) => {
@@ -146,9 +152,13 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-    req.session.destroy();
-    sess = {};
-    res.send({ message: "you have logged out!" })
+    if (sess.authenticated) {
+        req.session.destroy();
+        sess = {};
+        res.send({ message: "you have logged out!" })
+    }
+    else
+        res.send({ message: "you are not logged in" });
 });
 
 app.get('/user', (req, res) => {
@@ -177,6 +187,4 @@ app.get('/ingredient', (req, res) => {
 })
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log('listening on port ' + PORT)
-})
+app.listen(PORT, () => { console.log('listening on port ' + PORT) })
