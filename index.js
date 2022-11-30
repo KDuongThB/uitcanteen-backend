@@ -182,8 +182,26 @@ app.get('/menu/main', (req, res) => {
     })
 })
 
+app.get('/menu/main/proposed', (req, res) => {
+    db.query('SELECT * from dish WHERE dishTypeId = 1 ORDER BY RAND() LIMIT 5', (err, result) => {
+        if (err)
+            throw (err);
+        if (result)
+            res.send({ menu: result });
+    })
+})
+
 app.get('/menu/side', (req, res) => {
     db.query('SELECT * from dish WHERE dishTypeId = 2', (err, result) => {
+        if (err)
+            throw (err);
+        if (result)
+            res.send({ menu: result });
+    })
+})
+
+app.get('/menu/side/proposed', (req, res) => {
+    db.query('SELECT * from dish WHERE dishTypeId = 2 ORDER BY RAND() LIMIT 3', (err, result) => {
         if (err)
             throw (err);
         if (result)
