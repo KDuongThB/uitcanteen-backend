@@ -177,7 +177,7 @@ app.get('/menu', (req, res) => {
         if (err)
             throw (err);
         if (result)
-            res.send(result);
+            res.send({menu: result});
     })
 })
 
@@ -186,7 +186,7 @@ app.get('/ingredient', (req, res) => {
         if (err)
             throw (err);
         if (result)
-            res.send(result);
+            res.send({result});
     })
 })
 
