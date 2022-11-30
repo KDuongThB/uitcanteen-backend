@@ -25,7 +25,27 @@ else {
     })
 }
 
+app.use(
+    cors({
+        origin: "https://canteen-uit.netlify.app",
+        credentials: true,
+    })
+);
 
+app.use(function (req, res, next) {
+    var whitelist = ['localhost:5173', 'https://canteen-uit.netlify.app']
+    var host = req.get('host');
+
+    whitelist.forEach(function (val, key) {
+        if (host.indexOf(val) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', host);
+        }
+    })
+
+    next();
+});
+
+isProduction = process.env.PRODUCTION;
 
 app.use(session({
     name: "uit_sess",
@@ -36,23 +56,11 @@ app.use(session({
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
-        secure: true 
+        secure: true
     },
     // httpOnly: false
 })
 );
-app.use(cors())
-app.use((req, res, next) => {
-    const corsWhitelist = [
-        'https://canteen-uit.netlify.app',
-        'http://127.0.0.1:5173'
-    ];
-    if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    }
-    next();
-});
 
 app.use(express.json());
 
@@ -150,9 +158,9 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-        req.session.destroy();
-        sess = {};
-        res.send({ message: "you have logged out!" })
+    req.session.destroy();
+    sess = {};
+    res.send({ message: "you have logged out!" })
 })
 
 app.get('/user', (req, res) => {
@@ -167,7 +175,7 @@ app.get('/menu', (req, res) => {
         if (err)
             throw (err);
         if (result)
-            res.send({menu: result});
+            res.send({ menu: result });
     })
 })
 
@@ -176,7 +184,7 @@ app.get('/menu/main', (req, res) => {
         if (err)
             throw (err);
         if (result)
-            res.send({menu: result});
+            res.send({ menu: result });
     })
 })
 
@@ -185,7 +193,7 @@ app.get('/menu/side', (req, res) => {
         if (err)
             throw (err);
         if (result)
-            res.send({menu: result});
+            res.send({ menu: result });
     })
 })
 
@@ -194,11 +202,11 @@ app.get('/ingredient', (req, res) => {
         if (err)
             throw (err);
         if (result)
-            res.send({result});
+            res.send({ result });
     })
 })
 
-app.get('/order',(req,res) => {
+app.get('/order', (req, res) => {
     res.send('todo')
 })
 
