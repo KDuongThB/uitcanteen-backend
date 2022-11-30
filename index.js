@@ -14,14 +14,7 @@ let db, sessionStore;
 if (process.env.JAWSDB_URL) {
     db = mysql.createConnection(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL);
-    app.use(
-        cors({
-            origin: "https://canteen-uit.netlify.app",
-            credentials: true,
-        })
-    );
 }
-
 else {
     db = mysql.createConnection({
         user: 'root',
@@ -30,15 +23,9 @@ else {
         password: '',
         database: 'uitcanteen'
     })
-    app.use(
-        cors({
-            origin: "http://localhost:5173",
-            credentials: true,
-        })
-    );
 }
 
-isProduction = process.env.PRODUCTION;
+
 
 app.use(session({
     name: "uit_sess",
@@ -54,6 +41,19 @@ app.use(session({
     // httpOnly: false
 })
 );
+
+app.use((req, res, next) => {
+    const corsWhitelist = [
+        'https://canteen-uit.netlify.app',
+        'http://127.0.0.1:5173'
+    ];
+    if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    }
+
+    next();
+});
 
 app.use(express.json());
 
