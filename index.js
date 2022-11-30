@@ -68,7 +68,7 @@ app.use(cookieParser());
 var sess = {};
 
 app.get('/', (req, res) => {
-    sess = req.session;
+    // sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
@@ -76,7 +76,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    sess = req.session;
+    // sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
@@ -84,7 +84,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    sess = req.session;
+    // sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -155,7 +155,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-    sess = req.session;
+    // sess = req.session;
     if (sess.authenticated) {
         req.session.destroy();
         sess = {};
