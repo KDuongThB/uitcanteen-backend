@@ -46,7 +46,6 @@ app.use(session({
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
-        secure: isProduction
     }
 })
 );
@@ -75,6 +74,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+    sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
@@ -82,6 +82,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+    sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -133,7 +134,7 @@ app.post("/login", (req, res) => {
                     console.log('login query works\n', userData);
                     sess.authenticated = true;
                     sess.user = userData;
-                    res.send(userData);
+                    res.send(req.session.user);
                 }
                 else {
                     res.status(401).send({ message: "Wrong password" });
@@ -152,6 +153,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
+    sess = req.session;
     if (sess.authenticated) {
         req.session.destroy();
         sess = {};
@@ -185,6 +187,8 @@ app.get('/ingredient', (req, res) => {
             res.send(result);
     })
 })
+
+app.get('/order',(req,res))
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log('listening on port ' + PORT) })
