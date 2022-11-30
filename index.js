@@ -14,6 +14,12 @@ let db, sessionStore;
 if (process.env.JAWSDB_URL) {
     db = mysql.createConnection(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL);
+    app.use(
+        cors({
+            origin: "https://canteen-uit.netlify.app",
+            credentials: true,
+        })
+    );
 }
 
 else {
@@ -24,15 +30,12 @@ else {
         password: '',
         database: 'uitcanteen'
     })
-    // sessionStore = new mysqlStore({
-    //     connectionLimit: 10,
-    //     password: "",
-    //     user: "root",
-    //     database: "uitcanteen",
-    //     host: 'localhost',
-    //     port: '3306',
-    //     createDatabaseTable: true
-    // });
+    app.use(
+        cors({
+            origin: "http://localhost:5173",
+            credentials: true,
+        })
+    );
 }
 
 isProduction = process.env.PRODUCTION;
@@ -50,13 +53,6 @@ app.use(session({
     },
     // httpOnly: false
 })
-);
-
-app.use(
-    cors({
-        origin: "https://canteen-uit.netlify.app",
-        credentials: true,
-    })
 );
 
 app.use(express.json());
@@ -155,15 +151,10 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-    // sess = req.session;
-    if (sess.authenticated) {
         req.session.destroy();
         sess = {};
         res.send({ message: "you have logged out!" })
-    }
-    else
-        res.send({ message: "you are not logged in" });
-});
+})
 
 app.get('/user', (req, res) => {
     if (sess.authenticated && sess.user)
