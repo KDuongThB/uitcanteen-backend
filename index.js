@@ -60,7 +60,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-var sess = {};
+var sess;
 
 app.get('/', (req, res) => {
     // sess = req.session;
@@ -151,7 +151,7 @@ app.post("/login", (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    sess = {};
+    sess = undefined;
     res.send({ message: "you have logged out!" })
 })
 
