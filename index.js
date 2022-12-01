@@ -39,8 +39,6 @@ var corsOptions = {
 
 app.use(cors(corsOptions))
 
-isProduction = process.env.PRODUCTION;
-
 app.use(session({
     name: "uit_sess",
     secret: "abcxyz",
@@ -218,9 +216,17 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
+app.post('/addorder', (req,res)=> {
+    if(sess.authenticated)
+    {
+        db.query('INSERT INTO order (userId) VALUES (?)', sess.user.userId)
+    }
+    
+})
+
 app.get('/order', (req, res) => {
     res.send('todo')
 })
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log('listening on port ' + PORT) })
