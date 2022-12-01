@@ -27,14 +27,14 @@ else {
 
 var whitelist = ['https://canteen-uit.netlify.app', 'http://localhost:5173']
 var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  credentials: true
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
+    credentials: true
 }
 
 app.use(cors(corsOptions))
@@ -60,12 +60,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-var sess={
-    authenticated: false,
-};
-
 app.get('/', (req, res) => {
-    // sess = req.session;
+    sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
@@ -218,12 +214,11 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-app.post('/addorder', (req,res)=> {
-    if(sess.authenticated)
-    {
+app.post('/addorder', (req, res) => {
+    if (sess.authenticated) {
         db.query('INSERT INTO order (userId) VALUES (?)', sess.user.userId)
     }
-    
+
 })
 
 app.get('/order', (req, res) => {
