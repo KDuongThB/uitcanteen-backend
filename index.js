@@ -60,7 +60,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-var sess;
+var sess={
+    authenticated: false,
+};
 
 app.get('/', (req, res) => {
     // sess = req.session;
