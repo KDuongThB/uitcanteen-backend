@@ -225,11 +225,12 @@ app.get('/ingredient', (req, res) => {
 app.post('/sendorder', (req, res) => {
     if (sess.authenticated) {
         
-        // const orderDetails = JSON.parse(req.body);
+        const orderDetails = req.body;
         const items = JSON.parse(orderDetails.items)
         // orderDetails.items = items;
         var keys = Object.keys(req.body.items);
         console.log(keys)
+        
         res.send({ message: "order taken!", order: req.body })
     }
     else
