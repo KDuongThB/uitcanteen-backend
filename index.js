@@ -38,7 +38,7 @@ var corsOptions = {
     credentials: true
 }
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 
 app.use(session({
     name: "uit_sess",
@@ -216,9 +216,9 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-app.post('/pushorder', (req, res) => {
+app.post('/sendorder', (req, res) => {
     if (sess.authenticated) {
-        db.query('INSERT INTO order (userId) VALUES (?)', sess.user.userId)
+        console.log(req.body)
     }
 
 })
