@@ -221,6 +221,8 @@ app.post('/sendorder', (req, res) => {
         console.log(req.body)
         res.send({message: "order taken!"})
     }
+    else
+        res.status(401).send({message: "Not logged in"})
 
 })
 
