@@ -61,10 +61,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-var sess;
+var sess = {};
 
 app.get('/', (req, res) => {
-    sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
