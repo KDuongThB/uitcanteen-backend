@@ -219,6 +219,7 @@ app.get('/ingredient', (req, res) => {
 app.post('/sendorder', (req, res) => {
     if (sess.authenticated) {
         console.log(req.body)
+        res.send({message: "order taken!"})
     }
 
 })
