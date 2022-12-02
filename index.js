@@ -26,15 +26,9 @@ else {
     })
 }
 
-var whitelist = ['https://canteen-uit.netlify.app', 'http://127.0.0.1:5173', "localhost:5173"]
+var whitelist = ['https://canteen-uit.netlify.app', 'http://127.0.0.1:5173', "http://localhost:5173"]
 var corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
+    origin: "*",
     credentials: true
 }
 
