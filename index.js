@@ -151,7 +151,7 @@ app.post("/login", (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    sess = undefined;
+    sess = {};
     res.send({ message: "you have logged out!" })
 })
 
