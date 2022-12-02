@@ -227,7 +227,7 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/getorder', (req, res) => {
-    res.send('todo')
+    res.send('ưhat')
 })
 
 const PORT = process.env.PORT || 3001;
