@@ -15,6 +15,7 @@ if (process.env.JAWSDB_URL) {
     db = mysql.createConnection(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL);
 }
+
 else {
     db = mysql.createConnection({
         user: 'root',
@@ -59,6 +60,8 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+
+var sess;
 
 app.get('/', (req, res) => {
     sess = req.session;
@@ -214,14 +217,14 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-app.post('/addorder', (req, res) => {
+app.post('/pushorder', (req, res) => {
     if (sess.authenticated) {
         db.query('INSERT INTO order (userId) VALUES (?)', sess.user.userId)
     }
 
 })
 
-app.get('/order', (req, res) => {
+app.get('/getorder', (req, res) => {
     res.send('todo')
 })
 
