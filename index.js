@@ -35,13 +35,11 @@ else {
 
 app.use(function (req, res, next) {
 
-    var allowedDomains = ['http://localhost:3001','https://canteen-uit.netlify.app' ];
+    var allowedDomains = ['http://127.0.0.1:5173','http://localhost:5173','https://canteen-uit.netlify.app'];
     var origin = req.headers.origin;
     if(allowedDomains.indexOf(origin) > -1){
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
-  
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
     res.setHeader('Access-Control-Allow-Credentials', true);
   
@@ -234,7 +232,7 @@ app.post('/sendorder', (req, res) => {
 
 })
 
-app.get('/allorder', (req, res) => {
+app.get('/allorders', (req, res) => {
     let data = {};
     db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
 
