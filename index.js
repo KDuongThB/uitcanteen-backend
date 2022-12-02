@@ -228,7 +228,8 @@ app.post('/sendorder', (req, res) => {
         // const orderDetails = JSON.parse(req.body);
         // const items = JSON.parse(orderDetails.items)
         // orderDetails.items = items;
-        console.log(typeof req.body)
+        var keys = Object.keys(req.body);
+        console.log(keys)
         res.send({ message: "order taken!", order: req.body })
     }
     else
