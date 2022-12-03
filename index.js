@@ -255,7 +255,7 @@ app.get('/allorders', (req, res) => {
         if (result)
             data.orderDetail = result;
     })
-    res.send(data);
+    res.send({allOrder: data});
 })
 
 const PORT = process.env.PORT || 3001;
