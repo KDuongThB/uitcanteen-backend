@@ -247,22 +247,19 @@ app.post('/sendorder',
                         res.send({ message: "cannot take order", err: err })
                     }
                     if (result) {
-                        console.log(result.insertId);
                         var orderId = result.insertId;
                         console.log("order ID: " + orderId)
                         for (let i = 0; i < items.length; i++) {
-                            console.log(items[i])
-                            db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)",
-                                [orderId, items[i].id, items[i].quantity],
-                                (err, result) => {
-                                    if (err) {
-                                        console.log(err);
-                                        res.send({ message: "cannot take order", err: err })
-                                        if (result) {
-                                            res.send({ message: "order taken!", orderId: orderId })
-                                        }
+                            console.log(items[i]);
+                            db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)", [orderId, items[i].id, items[i].quantity], (err, result) => {
+                                if (err) {
+                                    console.log(err);
+                                    res.send({ message: "cannot take order", err: err })
+                                    if (result) {
+                                        res.send({ message: "order taken!", orderId: orderId })
                                     }
-                                })
+                                }
+                            })
                         }
 
                     }
