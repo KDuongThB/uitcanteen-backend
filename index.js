@@ -224,7 +224,7 @@ app.get('/ingredient', (req, res) => {
 
 app.post('/sendorder', (req, res) => {
     if (sess.authenticated) {
-        
+
         const orderDetails = req.body;
         const items = JSON.parse(orderDetails.items)
         // orderDetails.items = items;
@@ -240,22 +240,24 @@ app.post('/sendorder', (req, res) => {
 
 app.get('/allorders', (req, res) => {
     var orderList = [];
-    var orderDetails =[];
-       
+    var orderDetails = [];
+
     db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
         if (err)
             console.log(err);
         if (result)
-        orderList.push(result);
+            for (let i = 0; i < result.length; i++)
+                orderList.push(result[i]);
     })
     db.query('SELECT * FROM order_detail WHERE 1', (err, result) => {
         if (err)
             console.log(err);
         if (result)
-            orderDetails.push(result);
+            for (let i = 0; i < result.length; i++)
+                orderDetails.push(result[i]);
     })
     console.log(orderDetails, "\n", orderList)
-    res.send({orderList: orderList, orderDetails: orderDetails});
+    res.send({ orderList: orderList, orderDetails: orderDetails });
 })
 
 const PORT = process.env.PORT || 3001;
