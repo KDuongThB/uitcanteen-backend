@@ -249,13 +249,16 @@ app.post('/sendorder',
                     }
                     if (result) {
                         var orderId = result.insertId;
+                        let total = 25000;
+                        if (orderDetails.cost == "30.000vnd")
+                            total = 30000;
                         let invoiceDetails = {
                             userId: orderDetails.userId,
                             orderId: orderId,
-                            total: parseInt(orderDetails.cost.replace('vnd', "")),
+                            total: total,
                             paymentId: parseInt(orderDetails.payMethod)
                         }
-                        db.query("INSERT INTO invoice (userId, orderId, total, paymentId VALUES (?, ? ,? ,?)",
+                        db.query("INSERT INTO invoice (userId, orderId, total, paymentId) VALUES (?, ? ,? ,?)",
                             [invoiceDetails.userId, invoiceDetails.orderId, invoiceDetails.total, invoiceDetails.paymentId], (err, result) => {
                                 if (err) {
                                     console.log(err)
