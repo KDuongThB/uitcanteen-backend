@@ -138,10 +138,10 @@ app.post("/login", (req, res) => {
             }
             if (result.length > 0) {
                 const userData = result[0];
-                userData.password = null;
                 if (loginData.password === userData.password) {
                     console.log('login query works\n', userData);
                     sess.authenticated = true;
+                    userData.password = null;
                     sess.user = userData;
                     res.send(req.session.user);
                 }
