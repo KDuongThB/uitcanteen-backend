@@ -242,12 +242,15 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
-    function retrieve() {
-        let orderList = db.query('SELECT * FROM ordr');
-
-        let orderDetails = db.query('SELECT * FROM order_detail');
-        return orderList, orderDetails;
-    }
+    db.query('SELECT * FROM ordr LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId',
+        (err, rows, fields) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (rows)
+                res.send({ orders: rows });
+        })
     // db.query('SELECT * FROM order_detail', (err, result) => {
     //     if (err)
     //         console.log(err);
@@ -257,9 +260,10 @@ app.get('/allorders', (req, res) => {
     // })
     // console.log(orderDetails, "\n", orderList)
     // res.send({ orderList: orderList, orderDetails: orderDetails });
-    let orderList, orderDetails = retrieve();
-    res.send({ orderList: orderList, orderDetails: orderDetails });
-})
+});
+
+
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log('listening on port ' + PORT) })
