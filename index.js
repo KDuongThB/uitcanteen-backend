@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
@@ -12,9 +12,10 @@ const mysqlStore = require('express-mysql-session')(session);
 
 let db, sessionStore;
 if (process.env.JAWSDB_URL) {
-    db = mysql.createConnection(process.env.JAWSDB_URL);
+    db = mysql.createPool(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL)
     db.multipleStatements = true;
+    db.connectionLimit = 10;
 }
 
 else {
@@ -241,10 +242,10 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
-    async function retrieve() {
-        let orderList = await db.query('SELECT * FROM ordr');
+    function retrieve() {
+        let orderList = db.query('SELECT * FROM ordr');
 
-        let orderDetails = await db.query('SELECT * FROM order_detail');
+        let orderDetails = db.query('SELECT * FROM order_detail');
         return orderList, orderDetails;
     }
     // db.query('SELECT * FROM order_detail', (err, result) => {
