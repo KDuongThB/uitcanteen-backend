@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
@@ -241,15 +241,14 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
-    var orderList = [];
-    var orderDetails = [];
+    let orderList;
+    let orderDetails;
 
     db.query('SELECT * FROM ordr', (err, result) => {
         if (err)
             console.log(err);
-        if (result.length > 0)
-                orderList = result[0];
-                orderDetails = result[1];
+        if(result)
+        res.send(result)
     })
     // db.query('SELECT * FROM order_detail', (err, result) => {
     //     if (err)
@@ -258,8 +257,8 @@ app.get('/allorders', (req, res) => {
     //         for (let i = 0; i < result.length; i++)
     //             orderDetails.push(result[i]);
     // })
-    console.log(orderDetails, "\n", orderList)
-    res.send({ orderList: orderList, orderDetails: orderDetails });
+    // console.log(orderDetails, "\n", orderList)
+    // res.send({ orderList: orderList, orderDetails: orderDetails });
 })
 
 const PORT = process.env.PORT || 3001;
