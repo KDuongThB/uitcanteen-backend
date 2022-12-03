@@ -308,7 +308,7 @@ app.get('/allorders',
     });
 
 app.get('/recentorder', (req, res) => {
-    db.query('SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1'), (err, result) => {
+    db.query('SELECT MAX(orderId) FROM ordr'), (err, result) => {
         if (err) {
             console.log(err)
             res.send({ err: err })
