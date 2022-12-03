@@ -239,19 +239,23 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
+    let data = {
+        orderList: Array(),
+        orderDetails: Array()
+    }
     db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
         if (err)
             console.log(err);
         if (result)
-            res.data.orders = result;
+        data.orderList.push(result)
     })
     db.query('SELECT * FROM order_detail WHERE 1', (err, result) => {
         if (err)
             console.log(err);
         if (result)
-            res.data.order_details = result;
+            data.orderDetails.push(result);
     })
-    res.send({allOrder: res.data});
+    res.send({allOrder: data});
 })
 
 const PORT = process.env.PORT || 3001;
