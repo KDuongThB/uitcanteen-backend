@@ -242,9 +242,9 @@ app.post('/sendorder', (req, res) => {
 
 app.get('/allorders', (req, res) => {
     async function retrieve() {
-        let orderList = await db.execute('SELECT * FROM ordr');
+        let orderList = await db.query('SELECT * FROM ordr');
 
-        let orderDetails = await db.execute('SELECT * FROM order_detail');
+        let orderDetails = await db.query('SELECT * FROM order_detail');
         return orderList, orderDetails;
     }
     // db.query('SELECT * FROM order_detail', (err, result) => {
