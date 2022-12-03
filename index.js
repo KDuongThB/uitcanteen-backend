@@ -72,6 +72,8 @@ app.use(cookieParser());
 
 var sess = {};
 
+// LOGIN APIs
+
 app.get('/', (req, res) => {
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
@@ -171,6 +173,8 @@ app.get('/user', (req, res) => {
         res.send({ message: "not logged in" })
 })
 
+// MENU APIs
+
 app.get('/menu', (req, res) => {
     db.query('SELECT * from dish WHERE 1', (err, result) => {
         if (err)
@@ -225,45 +229,57 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-app.post('/sendorder', (req, res) => {
-    if (sess.authenticated) {
+// ORDER APIs
 
-        const orderDetails = req.body;
-        const items = JSON.parse(orderDetails.items)
-        // orderDetails.items = items;
-        var keys = Object.keys(items);
-        console.log(keys)
+app.post('/sendorder',
+    (req, res) => {
+        if (sess.authenticated) {
+            let orderDetails = req.body;
+            let items = JSON.parse(orderDetails.items[...])
+            console.log(orderDetails)
+            // orderDetails.items = items;
+            console.log(items);
+            // db.query("INSERT INTO ordr (userId) VALUES (?)",
+            //     orderDetails.userId,
+            //     (err, result) => {
+            //         if (err) {
+            //             console.log(err)
+            //             res.send({ message: "cannot take order", err: err })
+            //         }
+            //         if (result)
+            //             res.send({ message: "order taken!", order:  })
+            //     })
 
-        res.send({ message: "order taken!", order: req.body })
-    }
-    else
-        res.status(401).send({ message: "Not logged in" })
+        }
+        else
+            res.status(401).send({ message: "Not logged in" })
 
-})
+    })
 
-app.get('/allorders', (req, res) => {
-    db.query('SELECT * FROM ordr LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId',
-        (err, rows, fields) => {
-            if (err) {
-                console.log(err)
-                res.send({ err: err })
-            }
-            if (rows)
-                res.send({ orders: rows });
-        })
-    // db.query('SELECT * FROM order_detail', (err, result) => {
-    //     if (err)
-    //         console.log(err);
-    //     if (result.length > 0)
-    //         for (let i = 0; i < result.length; i++)
-    //             orderDetails.push(result[i]);
-    // })
-    // console.log(orderDetails, "\n", orderList)
-    // res.send({ orderList: orderList, orderDetails: orderDetails });
-});
-
-
+app.get('/allorders',
+    (req, res) => {
+        db.query('SELECT * FROM ordr LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId',
+            (err, rows, fields) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ err: err })
+                }
+                if (rows)
+                    res.send({ orders: rows });
+            })
+        // db.query('SELECT * FROM order_detail', (err, result) => {
+        //     if (err)
+        //         console.log(err);
+        //     if (result.length > 0)
+        //         for (let i = 0; i < result.length; i++)
+        //             orderDetails.push(result[i]);
+        // })
+        // console.log(orderDetails, "\n", orderList)
+        // res.send({ orderList: orderList, orderDetails: orderDetails });
+    });
 
 
+
+/* WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO */
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log('listening on port ' + PORT) })
