@@ -306,7 +306,19 @@ app.get('/allorders',
         // res.send({ orderList: orderList, orderDetails: orderDetails });
     });
 
+// USER APIs
 
+app.post('/updateuser', (req, res) => {
+    if (sess.authenticated) {
+        userInfo = req.body;
+        // todo
+        res.send({message: "UPDATE!"})
+    }
+    else {
+        res.status(401).send({ message: "not logged in" });
+    }
+
+})
 
 /* WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO */
 const PORT = process.env.PORT || 3001;
