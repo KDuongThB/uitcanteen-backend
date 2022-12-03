@@ -248,7 +248,7 @@ app.get('/allorders', (req, res) => {
         if (err)
             console.log(err);
         if(result)
-        res.send(result)
+        orderList = result;
     })
     // db.query('SELECT * FROM order_detail', (err, result) => {
     //     if (err)
@@ -259,6 +259,7 @@ app.get('/allorders', (req, res) => {
     // })
     // console.log(orderDetails, "\n", orderList)
     // res.send({ orderList: orderList, orderDetails: orderDetails });
+    res.send(orderList);
 })
 
 const PORT = process.env.PORT || 3001;
