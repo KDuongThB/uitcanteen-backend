@@ -236,6 +236,7 @@ app.post('/sendorder',
         if (sess.authenticated) {
             let orderDetails = req.body;
             let items = JSON.parse(orderDetails.items)
+            
             console.log(orderDetails)
             // orderDetails.items = items;
             console.log(items);
@@ -248,6 +249,13 @@ app.post('/sendorder',
                     }
                     if (result) {
                         var orderId = result.insertId;
+                        let invoiceDetails = {
+                            userId: orderDetails.userId,
+                            orderId: orderId,
+                            total: parseInt(orderDetails.cost - "vnd"),
+                            paymentId: parseInt(orderDetails.payMethod)
+                        }
+                        db.query("INSERT INTO invoice (userId, orderId, total, paymentId VALUES (?, ? ,? ,?)",[invoiceDetails.userId, invoiceDetails.orderId, invoiceDetails.total, invoiceDetails.paymentId] )
                         console.log("order ID: " + orderId)
                         for (let i = 0; i < items.length; i++) {
                             console.log(items[i]);
