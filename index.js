@@ -315,7 +315,7 @@ app.get('/recentorder', (req, res) => {
         }
         if (result) {
             console.log(result)
-            var orderId = JSON.stringify(result.orderId);
+            var orderId = result.orderId;
             res.send(orderId)
         }
     })
