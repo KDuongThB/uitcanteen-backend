@@ -248,38 +248,26 @@ app.post('/sendorder',
                     }
                     if (result) {
                         console.log(result);
-                        db.query("SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1",
-                            (err, result) => {
-                                if (err) {
-                                    console.log(err)
-                                    res.send({ message: "cannot take order", err: err })
-                                }
-                                if (result.length > 1) {
-                                    var orderId = result[1];
-                                    console.log(orderId);
-                                    for (let i = 0; i++; i < items.length) {
-                                        db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)",
-                                            [orderId, items[i].id, items[i].quantity],
-                                            (err, result) => {
-                                                if (err) {
-                                                    console.log(err);
-                                                    res.send({ message: "cannot take order", err: err })
-                                                    if (result) {
-                                                        res.send({ message: "order taken!", orderId: orderId })
-                                                    }
-                                                }
-                                            })
+                        var orderId = result.insertId;
+                        for (let i = 0; i++; i < items.length) {
+                            db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)",
+                                [orderId, items[i].id, items[i].quantity],
+                                (err, result) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.send({ message: "cannot take order", err: err })
+                                        if (result) {
+                                            res.send({ message: "order taken!", orderId: orderId })
+                                        }
                                     }
+                                })
+                        }
 
-                                }
-                            })
                     }
                 })
-
-        }
-        else
+        } else {
             res.status(401).send({ message: "Not logged in" })
-
+        }
     })
 
 app.get('/allorders',
