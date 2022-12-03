@@ -241,15 +241,13 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
-    let orderList;
-    let orderDetails;
+    
+    
 
-    db.query('SELECT * FROM ordr', (err, result) => {
-        if (err)
-            console.log(err);
-        if(result)
-        orderList = result;
-    })
+    let orderList = await db.query('SELECT * FROM ordr');
+
+    let orderDetails = await db.query('SELECT * FROM order_detail');
+    
     // db.query('SELECT * FROM order_detail', (err, result) => {
     //     if (err)
     //         console.log(err);
@@ -259,7 +257,7 @@ app.get('/allorders', (req, res) => {
     // })
     // console.log(orderDetails, "\n", orderList)
     // res.send({ orderList: orderList, orderDetails: orderDetails });
-    res.send(orderList);
+    res.send({orderList: orderList, orderDetails: orderDetails});
 })
 
 const PORT = process.env.PORT || 3001;
