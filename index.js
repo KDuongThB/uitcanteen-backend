@@ -242,17 +242,17 @@ app.get('/allorders', (req, res) => {
     var orderList = [];
     var orderDetails = [];
 
-    db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
+    db.query('SELECT * FROM ordr', (err, result) => {
         if (err)
             console.log(err);
-        if (result)
+        if (result.length > 0)
             for (let i = 0; i < result.length; i++)
                 orderList.push(result[i]);
     })
-    db.query('SELECT * FROM order_detail WHERE 1', (err, result) => {
+    db.query('SELECT * FROM order_detail', (err, result) => {
         if (err)
             console.log(err);
-        if (result)
+        if (result.length > 0)
             for (let i = 0; i < result.length; i++)
                 orderDetails.push(result[i]);
     })
