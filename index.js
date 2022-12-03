@@ -255,7 +255,7 @@ app.post('/sendorder',
                                     res.send({ message: "cannot take order", err: err })
                                 }
                                 if (result) {
-                                    orderId = result[1].orderId;
+                                    var orderId = result[1].orderId;
                                     console.log(orderId);
                                     for (let i = 0; i++; i < items.length) {
                                         db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)",
