@@ -313,8 +313,10 @@ app.get('/recentorder', (req, res) => {
             console.log(err)
             res.send({ err: err })
         }
-        if (result)
+        if (result) {
+            console.log(result)
             res.send({ lastOrder: result })
+        }
     }
 })
 
