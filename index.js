@@ -316,7 +316,7 @@ app.get('/recentorder', (req, res) => {
         if (result) {
             console.log(result)
             var orderId = result[0].orderId;
-            res.send(orderId)
+            res.send({orderId})
         }
     })
 })
