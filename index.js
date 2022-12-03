@@ -239,14 +239,14 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
-    var orderList = Array(),
-    var orderDetails = Array()
+    var orderList = Array();
+    var orderDetails = Array();
        
     db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
         if (err)
             console.log(err);
         if (result)
-        orderList.push(result)
+        orderList.push(result);
     })
     db.query('SELECT * FROM order_detail WHERE 1', (err, result) => {
         if (err)
@@ -254,6 +254,7 @@ app.get('/allorders', (req, res) => {
         if (result)
             orderDetails.push(result);
     })
+    console.log(orderDetails, "\n", orderList)
     res.send({orderList: orderList, orderDetails: orderDetails});
 })
 
