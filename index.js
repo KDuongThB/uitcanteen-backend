@@ -247,7 +247,7 @@ app.post('/sendorder',
                         res.send({ message: "cannot take order", err: err })
                     }
                     if (result) {
-                        console(result);
+                        console.log(result);
                         db.query("SELECT TOP 1 orderId FROM ordr ORDER BY orderId DESC",
                             (err, result) => {
                                 if (err) {
