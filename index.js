@@ -55,9 +55,10 @@ app.use(session({
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: true,
-        secure: true
+        secure: false,
+        httpOnly: false
     },
-    // httpOnly: false
+    
 })
 );
 
@@ -242,20 +243,20 @@ app.get('/allorders', (req, res) => {
     var orderList = [];
     var orderDetails = [];
 
-    db.query('SELECT * FROM ordr', (err, result) => {
+    db.query('SELECT * FROM ordr; SELECT * FROM order_detail', (err, result) => {
         if (err)
             console.log(err);
         if (result.length > 0)
-            for (let i = 0; i < result.length; i++)
-                orderList.push(result[i]);
+                orderList = result[0];
+                orderDetails = result[1];
     })
-    db.query('SELECT * FROM order_detail', (err, result) => {
-        if (err)
-            console.log(err);
-        if (result.length > 0)
-            for (let i = 0; i < result.length; i++)
-                orderDetails.push(result[i]);
-    })
+    // db.query('SELECT * FROM order_detail', (err, result) => {
+    //     if (err)
+    //         console.log(err);
+    //     if (result.length > 0)
+    //         for (let i = 0; i < result.length; i++)
+    //             orderDetails.push(result[i]);
+    // })
     console.log(orderDetails, "\n", orderList)
     res.send({ orderList: orderList, orderDetails: orderDetails });
 })
