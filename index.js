@@ -236,7 +236,7 @@ app.post('/sendorder',
         if (sess.authenticated) {
             let orderDetails = req.body;
             let items = JSON.parse(orderDetails.items)
-            
+
             console.log(orderDetails)
             // orderDetails.items = items;
             console.log(items);
@@ -252,10 +252,16 @@ app.post('/sendorder',
                         let invoiceDetails = {
                             userId: orderDetails.userId,
                             orderId: orderId,
-                            total: parseInt(orderDetails.cost - "vnd"),
+                            total: parseInt(orderDetails.cost.replace('vnd', "")),
                             paymentId: parseInt(orderDetails.payMethod)
                         }
-                        db.query("INSERT INTO invoice (userId, orderId, total, paymentId VALUES (?, ? ,? ,?)",[invoiceDetails.userId, invoiceDetails.orderId, invoiceDetails.total, invoiceDetails.paymentId] )
+                        db.query("INSERT INTO invoice (userId, orderId, total, paymentId VALUES (?, ? ,? ,?)",
+                            [invoiceDetails.userId, invoiceDetails.orderId, invoiceDetails.total, invoiceDetails.paymentId], (err, result) => {
+                                if (err) {
+                                    console.log(err)
+                                    res.send({ message: "cannot take order", err: err })
+                                }
+                            })
                         console.log("order ID: " + orderId)
                         for (let i = 0; i < items.length; i++) {
                             console.log(items[i]);
