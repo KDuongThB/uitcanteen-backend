@@ -248,14 +248,14 @@ app.post('/sendorder',
                     }
                     if (result) {
                         console.log(result);
-                        db.query("SELECT orderId FROM ordr ORDER BY orderId DESC LIMIT 1",
+                        db.query("SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1",
                             (err, result) => {
                                 if (err) {
                                     console.log(err)
                                     res.send({ message: "cannot take order", err: err })
                                 }
-                                if (result) {
-                                    var orderId = result[1].orderId;
+                                if (result.length > 1) {
+                                    var orderId = result[1];
                                     console.log(orderId);
                                     for (let i = 0; i++; i < items.length) {
                                         db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)",
