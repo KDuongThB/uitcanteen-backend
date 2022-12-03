@@ -12,7 +12,7 @@ const mysqlStore = require('express-mysql-session')(session);
 
 let db, sessionStore;
 if (process.env.JAWSDB_URL) {
-    db = await mysql.createConnection(process.env.JAWSDB_URL);
+    db = mysql.createConnection(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL)
     db.multipleStatements = true;
 }
@@ -59,7 +59,7 @@ app.use(session({
         secure: false,
         httpOnly: false
     },
-    
+
 })
 );
 
@@ -242,11 +242,11 @@ app.post('/sendorder', (req, res) => {
 
 app.get('/allorders', (req, res) => {
     async function retrieve() {
-    let orderList = await db.execute('SELECT * FROM ordr');
+        let orderList = await db.execute('SELECT * FROM ordr');
 
-    let orderDetails = await db.execute('SELECT * FROM order_detail');
-    return orderList, orderDetails;
-    }   
+        let orderDetails = await db.execute('SELECT * FROM order_detail');
+        return orderList, orderDetails;
+    }
     // db.query('SELECT * FROM order_detail', (err, result) => {
     //     if (err)
     //         console.log(err);
@@ -257,7 +257,7 @@ app.get('/allorders', (req, res) => {
     // console.log(orderDetails, "\n", orderList)
     // res.send({ orderList: orderList, orderDetails: orderDetails });
     let orderList, orderDetails = retrieve();
-    res.send({orderList: orderList, orderDetails: orderDetails});
+    res.send({ orderList: orderList, orderDetails: orderDetails });
 })
 
 const PORT = process.env.PORT || 3001;
