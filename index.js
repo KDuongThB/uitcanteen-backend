@@ -244,7 +244,7 @@ app.get('/allorders', (req, res) => {
     var orderList = [];
     var orderDetails = [];
 
-    db.query('SELECT * FROM ordr; SELECT * FROM order_detail', (err, result) => {
+    db.query('SELECT * FROM ordr', (err, result) => {
         if (err)
             console.log(err);
         if (result.length > 0)
