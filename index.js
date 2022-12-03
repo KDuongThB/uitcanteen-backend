@@ -239,8 +239,8 @@ app.post('/sendorder', (req, res) => {
 })
 
 app.get('/allorders', (req, res) => {
-    var orderList = Array();
-    var orderDetails = Array();
+    var orderList = [];
+    var orderDetails =[];
        
     db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
         if (err)
