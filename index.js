@@ -255,13 +255,11 @@ app.post('/sendorder',
                                 if (err) {
                                     console.log(err);
                                     res.send({ message: "cannot take order", err: err })
-                                    if (result) {
-                                        res.send({ message: "order taken!", orderId: orderId })
-                                    }
                                 }
                             })
                         }
 
+                        res.send({ message: "order taken!", orderId: orderId })
                     }
                 })
         } else {
