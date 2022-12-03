@@ -240,8 +240,8 @@ app.post('/sendorder', (req, res) => {
 
 app.get('/allorders', (req, res) => {
     let data = {
-        orderList,
-        orderDetail,
+        orderList: {},
+        orderDetail: {},
     };
     db.query('SELECT * FROM ordr WHERE 1', (err, result) => {
         if (err)
