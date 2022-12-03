@@ -138,6 +138,7 @@ app.post("/login", (req, res) => {
             }
             if (result.length > 0) {
                 const userData = result[0];
+                userData.password = null;
                 if (loginData.password === userData.password) {
                     console.log('login query works\n', userData);
                     sess.authenticated = true;
@@ -306,13 +307,24 @@ app.get('/allorders',
         // res.send({ orderList: orderList, orderDetails: orderDetails });
     });
 
+app.get('/recentorder', (req, res) => {
+    db.query('SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1'), (err, result) => {
+        if (err) {
+            console.log(err)
+            res.send({ err: err })
+        }
+        if (result)
+            res.send({ lastOrder: result })
+    }
+})
+
 // USER APIs
 
 app.post('/updateuser', (req, res) => {
     if (sess.authenticated) {
         userInfo = req.body;
         // todo
-        res.send({message: "UPDATE!"})
+        res.send({ message: "UPDATE, PEOPLE! UPDATE!" })
     }
     else {
         res.status(401).send({ message: "not logged in" });
