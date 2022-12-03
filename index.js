@@ -248,7 +248,7 @@ app.post('/sendorder',
                     }
                     if (result) {
                         console.log(result);
-                        db.query("SELECT TOP 1 orderId FROM ordr ORDER BY orderId DESC",
+                        db.query("SELECT orderId FROM ordr ORDER BY orderId DESC LIMIT 1",
                             (err, result) => {
                                 if (err) {
                                     console.log(err)
