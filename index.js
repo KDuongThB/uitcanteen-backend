@@ -235,7 +235,7 @@ app.post('/sendorder',
     (req, res) => {
         if (sess.authenticated) {
             let orderDetails = req.body;
-            let item = JSON.parse(orderDetails.items)
+            let items = JSON.parse(orderDetails.items)
             console.log(orderDetails)
             // orderDetails.items = items;
             console.log(items);
