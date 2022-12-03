@@ -308,16 +308,16 @@ app.get('/allorders',
     });
 
 app.get('/recentorder', (req, res) => {
-    db.query('SELECT MAX(orderId) FROM ordr'), (err, result) => {
+    db.query('SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1', (err, result) => {
         if (err) {
             console.log(err)
             res.send({ err: err })
         }
         if (result) {
             console.log(result)
-            res.send({ lastOrder: result })
+            res.send(result)
         }
-    }
+    })
 })
 
 // USER APIs
