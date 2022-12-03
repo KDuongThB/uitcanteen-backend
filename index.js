@@ -35,7 +35,7 @@ else {
 
 app.use(function (req, res, next) {
 
-    var allowedDomains = ['http://127.0.0.1:5173', 'http://localhost:5173', 'https://canteen-uit.netlify.app'];
+    var allowedDomains = ['http://127.0.0.1:5173', 'http://localhost:5173', 'https://canteen-uit.netlify.app', 'https://uit-canteen-admin.netlify.app'];
     var origin = req.headers.origin;
     if (allowedDomains.indexOf(origin) > -1) {
         res.setHeader('Access-Control-Allow-Origin', origin);
