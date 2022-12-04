@@ -10,7 +10,7 @@ const app = express();
 
 const mysqlStore = require('express-mysql-session')(session);
 
-let db, sessionStore;
+let db;
 if (process.env.JAWSDB_URL) {
     db = mysql.createPool(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL)
@@ -26,11 +26,10 @@ app.use(session({
     // store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
-        sameSite: 'none',
+        // sameSite: 'none',
         secure: false,
-        httpOnly: false
+        // httpOnly: false
     },
-
 })
 );
 
@@ -116,7 +115,7 @@ app.post("/login", (req, res) => {
         email: req.body.username,
         password: req.body.password,
     };
-    if (sess.authenticated) {
+    if (sess.authenticated && sess.user) {
         res.send({ loggedIn: true, user: sess.user })
     }
     else {
@@ -148,7 +147,6 @@ app.post("/login", (req, res) => {
             };
         });
     }
-
 });
 
 app.get('/logout', (req, res) => {
