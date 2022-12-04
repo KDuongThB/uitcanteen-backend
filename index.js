@@ -28,7 +28,7 @@ app.use(session({
         maxAge: 8 * 60 * 60 * 1000,
         // sameSite: 'none',
         secure: false,
-        // httpOnly: false
+        httpOnly: false
     },
 })
 );
@@ -309,7 +309,7 @@ app.get('/recentorder', (req, res) => {
 })
 
 app.get('/completed', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -329,7 +329,7 @@ app.get('/completed', (req, res) => {
 })
 
 app.get('/cancelled', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -341,7 +341,7 @@ app.get('/cancelled', (req, res) => {
                     res.send({ err: err })
                 }
                 if (rows)
-                    res.send({ completedOrders: rows });
+                    res.send({ cancelledOrders: rows });
             })
     } else {
         res.status(401).send({ message: "not logged in" })
