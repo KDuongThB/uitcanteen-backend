@@ -377,8 +377,8 @@ app.post('/updateuser', (req, res) => {
         var names = userInfo.fullName.split(' ');
         var lastName = names[0];
         var firstName = names[1] + " " + names[2];
-        var mobile = userInfo.phoneNumber;
-        var studentId = userInfo.studentId;
+        var mobile = parseInt(userInfo.phoneNumber);
+        var studentId = parseInt(userInfo.studentId);
         console.log(lastName, "\n", firstName, "\n", mobile, "\n", studentId);
         db.query('UPDATE usr SET lastName = ?, firstName = ?, mobile = ?, studentId = ? WHERE userId = ?', [lastName, firstName, mobile, studentId, userId],
             (err, result) => {
