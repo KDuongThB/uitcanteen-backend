@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
-const app = express.createServer();
+const app = express();
 
 const mysqlStore = require('express-mysql-session')(session);
 
