@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
-const app = express();
+const app = express.createServer();
 
 const mysqlStore = require('express-mysql-session')(session);
 
@@ -54,6 +54,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     // store: sessionStore,
+    store: MemoryStore(
+        { reapInterval: 60000 * 10 }),
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: 'none',
@@ -76,23 +78,28 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
     var sess = req.session;
-    if (sess.authenticated)
+    if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
-    else
-        res.send({ loggedIn: false })
+    else {
+        sess.user = 'none';
+        res.send({ loggedIn: false, user: sess.user })
+    }
+
 });
 
 app.get("/login", (req, res) => {
     sess = req.session;
-    if (sess.authenticated)
+    if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
-    else
-        res.send({ loggedIn: false })
+    else {
+        sess.user = 'none';
+        res.send({ loggedIn: false, user: sess.user })
+    }
 });
 
 app.post("/register", (req, res) => {
     var sess = req.session;
-    if (sess.authenticated)
+    if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
         const email = req.body.username;
@@ -144,7 +151,7 @@ app.post("/login", (req, res) => {
                     sess.authenticated = true;
                     userData.password = null;
                     sess.user = userData;
-                    res.send(req.session.user);
+                    res.send(sess.user);
                 }
                 else {
                     res.status(401).send({ message: "Wrong password" });
