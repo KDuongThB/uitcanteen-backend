@@ -371,9 +371,28 @@ app.get('/user', (req, res) => {
 app.post('/updateuser', (req, res) => {
     // var sess = req.session;
     if (sess.authenticated && sess.user) {
-        userInfo = req.body;
-        // todo
-        res.send({ message: "UPDATE, PEOPLE! UPDATE!" })
+        var userInfo = req.body;
+        console.log(userInfo)
+        var userId = userInfo.userId;
+        var names = userInfo.fullName.split(' ');
+        var lastName = names[0];
+        var firstName = names[1] + " " + names[2];
+        var mobile = userInfo.phoneNumber;
+        var studentId = userInfo.studentId;
+        console.log(lastName, "\n", firstName, "\n", phone, "\n", studentId);
+        db.query('UPDATE usr SET lastName = ?, firstName = ?, mobile = ?, studentId = ? WHERE userId = ?', [lastName, firstName, mobile, studentId, userId],
+            (err, result) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ message: "cannot update", err: err })
+                    if (result.length > 0) {
+                        db.query('SELECT * FROM usr WHERE userId = ?', userId,
+                            (err, result) => {
+                                res.send({ message: "UPDATE, PEOPLE! UPDATE!", user: result[0] })
+                            })
+                    }
+                }
+            })
     }
     else {
         res.status(401).send({ message: "not logged in" });
