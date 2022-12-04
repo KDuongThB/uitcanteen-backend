@@ -5,6 +5,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const e = require('express');
 
 const app = express();
 
@@ -39,7 +40,7 @@ app.use(session({
     // store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
-        // sameSite: 'none',
+        sameSite: 'none',
         secure: false,
         httpOnly: false
     },
@@ -50,14 +51,20 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
-var sess = {};
+// var sess = {};
 
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
-    // var sess = req.session;
+    req.session.reload(function (err) {
+        // session updated
+        if (err) {
+            res.send({ err: err })
+        }
+    })
+    var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -110,7 +117,10 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    sess = req.session;
+    req.session.reload(function(err) {
+        // session updated
+      })
+    var sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
