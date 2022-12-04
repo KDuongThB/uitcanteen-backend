@@ -371,7 +371,7 @@ app.get('/user', (req, res) => {
 app.post('/updateuser', (req, res) => {
     // var sess = req.session;
     if (sess.authenticated && sess.user) {
-        var userInfo = JSON.parse(req.body);
+        var userInfo = req.body;
         console.log(userInfo)
         var userId = userInfo.userId;
         var names = userInfo.fullName.split(' ');
