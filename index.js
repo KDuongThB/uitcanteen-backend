@@ -53,18 +53,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use(cookieParser());
 
-// var sess = {};
+var sess = {};
 
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
-    req.session.reload(function (err) {
-        // session updated
-        if (err) {
-            res.send({ err: err })
-        }
-    })
-    var sess = req.session;
+    // req.session.reload(function (err) {
+    //     // session updated
+    //     if (err) {
+    //         res.send({ err: err })
+    //     }
+    // })
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -117,10 +117,11 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    req.session.reload(function(err) {
-        // session updated
-      })
-    var sess = req.session;
+    // req.session.reload(function(err) {
+    //     // session updated
+    //   })
+    // var sess = req.session;
+    sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
