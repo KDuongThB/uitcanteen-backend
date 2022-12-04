@@ -377,20 +377,30 @@ app.post('/updateuser', (req, res) => {
         var names = userInfo.fullName.split(' ');
         var lastName = names[0];
         var firstName = names[1] + " " + names[2];
-        var mobile = parseInt(userInfo.phoneNumber);
+        var mobile = userInfo.phoneNumber;
         var studentId = parseInt(userInfo.studentId);
         console.log(lastName, "\n", firstName, "\n", mobile, "\n", studentId);
-        db.query('UPDATE usr SET lastName = ?, firstName = ?, mobile = ?, studentId = ? WHERE userId = ?', [lastName, firstName, mobile, studentId, userId],
+        db.query('UPDATE usr \
+        SET lastName = ?, firstName = ?, mobile = ?, studentId = ? \
+        WHERE userId = ?',
+            [lastName, firstName, mobile, studentId, userId],
             (err, result) => {
                 if (err) {
                     console.log(err)
                     res.send({ message: "cannot update", err: err })
-                    if (result.length > 0) {
-                        db.query('SELECT * FROM usr WHERE userId = ?', userId,
-                            (err, result) => {
+                }
+                if (result) {
+                    db.query('SELECT * FROM usr WHERE userId = ?', userId,
+                        (err, result) => {
+                            if (err) {
+                                console.log(err)
+                                res.send({ message: "cannot update", err: err })
+                            }
+                            if (result.length > 0) {
                                 res.send({ message: "UPDATE, PEOPLE! UPDATE!", user: result[0] })
-                            })
-                    }
+                            }
+
+                        })
                 }
             })
     }
