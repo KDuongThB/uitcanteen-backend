@@ -16,21 +16,7 @@ if (process.env.JAWSDB_URL) {
     sessionStore = new mysqlStore(process.env.JAWSDB_URL)
     db.multipleStatements = true;
     db.connectionLimit = 10;
-    sessionStore.createDatabaseTable = true;
 }
-
-app.use(function (req, res, next) {
-
-    var allowedDomains = ['http://127.0.0.1:5173', 'http://localhost:5173', 'https://canteen-uit.netlify.app', 'https://uit-canteen-admin.netlify.app', 'http:://localhost:3000'];
-    var origin = req.headers.origin;
-    if (allowedDomains.indexOf(origin) > -1) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    next();
-})
 
 app.use(session({
     name: "uit_sess",
@@ -47,6 +33,19 @@ app.use(session({
 
 })
 );
+
+app.use(function (req, res, next) {
+
+    var allowedDomains = ['http://127.0.0.1:5173', 'http://localhost:5173', 'https://canteen-uit.netlify.app', 'https://uit-canteen-admin.netlify.app', 'http:://localhost:3000'];
+    var origin = req.headers.origin;
+    if (allowedDomains.indexOf(origin) > -1) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    next();
+})
 
 app.use(express.json());
 
