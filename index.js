@@ -287,7 +287,9 @@ app.post('/sendorder',
 
 app.get('/allorders',
     (req, res) => {
-        db.query('SELECT * FROM ordr LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId',
+        db.query('SELECT * FROM ordr \
+        LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
+        LEFT JOIN invoice ON invoice.orderId=order_detail.orderId',
             (err, rows, fields) => {
                 if (err) {
                     console.log(err)
