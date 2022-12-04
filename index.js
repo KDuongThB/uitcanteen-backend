@@ -226,8 +226,8 @@ app.get('/ingredient', (req, res) => {
 
 app.post('/sendorder',
     (req, res) => {
-        var sess = req.session;
-        if (sess.authenticated) {
+        // var sess = req.session;
+        if (sess.authenticated && sess.user) {
             let orderDetails = req.body;
             let items = JSON.parse(orderDetails.items)
 
