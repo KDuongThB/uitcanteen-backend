@@ -52,12 +52,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use(cookieParser());
 
-// var sess = {};
+var sess = {};
 
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    sess = req.session;
+    // sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -78,7 +78,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -151,16 +151,8 @@ app.post("/login", (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    // sess = {};
+    sess = {};
     res.send({ message: "you have logged out!" })
-})
-
-app.get('/user', (req, res) => {
-    var sess = req.session;
-    if (sess.authenticated && sess.user)
-        res.send({ user: sess.user });
-    else
-        res.send({ message: "not logged in" })
 })
 
 // *MENU APIs
@@ -357,10 +349,17 @@ app.get('/cancelled', (req, res) => {
 })
 
 // *USER APIs
+app.get('/user', (req, res) => {
+    // var sess = req.session;
+    if (sess.authenticated && sess.user)
+        res.send({ user: sess.user });
+    else
+        res.send({ message: "not logged in" })
+})
 
 app.post('/updateuser', (req, res) => {
-    var sess = req.session;
-    if (sess.authenticated) {
+    // var sess = req.session;
+    if (sess.authenticated && sess.user) {
         userInfo = req.body;
         // todo
         res.send({ message: "UPDATE, PEOPLE! UPDATE!" })
