@@ -19,23 +19,6 @@ if (process.env.JAWSDB_URL) {
     sessionStore.createDatabaseTable = true;
 }
 
-else {
-    db = mysql.createConnection({
-        user: 'root',
-        host: 'localhost',
-        port: '3306',
-        password: '',
-        database: 'uitcanteen'
-    })
-}
-
-// var corsOptions = {
-//     origin: "*",
-//     credentials: true
-// }
-
-// app.use(cors())
-
 app.use(function (req, res, next) {
 
     var allowedDomains = ['http://127.0.0.1:5173', 'http://localhost:5173', 'https://canteen-uit.netlify.app', 'https://uit-canteen-admin.netlify.app', 'http:://localhost:3000'];
