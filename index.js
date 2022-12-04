@@ -110,7 +110,7 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    var sess = req.session;
+    sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
