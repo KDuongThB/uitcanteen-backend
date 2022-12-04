@@ -141,6 +141,7 @@ app.post("/login", (req, res) => {
                 if (loginData.password === userData.password) {
                     console.log('login query works\n', userData);
                     sess.authenticated = true;
+                    userData.password = null;
                     sess.user = userData;
                     res.send(req.session.user);
                 }
@@ -306,6 +307,23 @@ app.get('/allorders',
         // res.send({ orderList: orderList, orderDetails: orderDetails });
     });
 
+
+
+app.get('/recentorder', (req, res) => {
+    db.query('SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1',
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                var orderId = result[0].orderId;
+                res.send({ orderId })
+            }
+        })
+})
+
 app.get('/completed', (req, res) => {
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
@@ -326,12 +344,12 @@ app.get('/completed', (req, res) => {
     }
 })
 
-app.get('/completed', (req, res) => {
+app.get('/cancelled', (req, res) => {
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
         LEFT JOIN invoice ON invoice.orderId=order_detail.orderId \
-        WHERE statusOrderId = 3 and ordr.userId = ?',
+        WHERE statusOrderId = 3 AND ordr.userId = ?',
             sess.user.userId,
             (err, rows, fields) => {
                 if (err) {
@@ -344,6 +362,20 @@ app.get('/completed', (req, res) => {
     } else {
         res.status(401).send({ message: "not logged in" })
     }
+})
+
+// *USER APIs
+
+app.post('/updateuser', (req, res) => {
+    if (sess.authenticated) {
+        userInfo = req.body;
+        // todo
+        res.send({ message: "UPDATE, PEOPLE! UPDATE!" })
+    }
+    else {
+        res.status(401).send({ message: "not logged in" });
+    }
+
 })
 
 /* WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO */
