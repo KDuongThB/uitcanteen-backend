@@ -13,9 +13,10 @@ const mysqlStore = require('express-mysql-session')(session);
 let db, sessionStore;
 if (process.env.JAWSDB_URL) {
     db = mysql.createPool(process.env.JAWSDB_URL);
-    // sessionStore = new mysqlStore(process.env.JAWSDB_URL)
+    sessionStore = new mysqlStore(process.env.JAWSDB_URL)
     db.multipleStatements = true;
     db.connectionLimit = 10;
+    sessionStore.createDatabaseTable = true;
 }
 
 else {
@@ -53,9 +54,7 @@ app.use(session({
     secret: "abcxyz",
     resave: false,
     saveUninitialized: false,
-    // store: sessionStore,
-    store: MemoryStore(
-        { reapInterval: 60000 * 10 }),
+    store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: 'none',
