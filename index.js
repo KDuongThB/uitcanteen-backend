@@ -72,7 +72,7 @@ app.use(cookieParser());
 
 var sess = {};
 
-// LOGIN APIs
+// *LOGIN APIs
 
 app.get('/', (req, res) => {
     if (sess.authenticated)
@@ -229,7 +229,7 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-// ORDER APIs
+// *ORDER APIs
 
 app.post('/sendorder',
     (req, res) => {
@@ -306,7 +306,45 @@ app.get('/allorders',
         // res.send({ orderList: orderList, orderDetails: orderDetails });
     });
 
+app.get('/completed', (req, res) => {
+    if (sess.authenticated && sess.user.userId) {
+        db.query('SELECT * FROM ordr \
+        LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
+        LEFT JOIN invoice ON invoice.orderId=order_detail.orderId \
+        WHERE statusOrderId = 1 OR statusOrderId = 2 AND ordr.userId = ?',
+            sess.user.userId,
+            (err, rows, fields) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ err: err })
+                }
+                if (rows)
+                    res.send({ completedOrders: rows });
+            })
+    } else {
+        res.status(401).send({ message: "not logged in" })
+    }
+})
 
+app.get('/completed', (req, res) => {
+    if (sess.authenticated && sess.user.userId) {
+        db.query('SELECT * FROM ordr \
+        LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
+        LEFT JOIN invoice ON invoice.orderId=order_detail.orderId \
+        WHERE statusOrderId = 3 and ordr.userId = ?',
+            sess.user.userId,
+            (err, rows, fields) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ err: err })
+                }
+                if (rows)
+                    res.send({ completedOrders: rows });
+            })
+    } else {
+        res.status(401).send({ message: "not logged in" })
+    }
+})
 
 /* WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO */
 const PORT = process.env.PORT || 3001;
