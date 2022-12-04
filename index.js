@@ -56,7 +56,7 @@ app.use(session({
     // store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
-        sameSite: true,
+        sameSite: 'none',
         secure: false,
         httpOnly: false
     },
@@ -68,13 +68,14 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
-var sess = {};
+// var sess = {};
 
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
+    var sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
@@ -82,7 +83,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    // sess = req.session;
+    sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else
@@ -90,7 +91,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    // sess = req.session;
+    var sess = req.session;
     if (sess.authenticated)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -122,7 +123,7 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    sess = req.session;
+    var sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
@@ -163,11 +164,12 @@ app.post("/login", (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    sess = {};
+    // sess = {};
     res.send({ message: "you have logged out!" })
 })
 
 app.get('/user', (req, res) => {
+    var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ user: sess.user });
     else
@@ -234,6 +236,7 @@ app.get('/ingredient', (req, res) => {
 
 app.post('/sendorder',
     (req, res) => {
+        var sess = req.session;
         if (sess.authenticated) {
             let orderDetails = req.body;
             let items = JSON.parse(orderDetails.items)
@@ -327,6 +330,7 @@ app.get('/recentorder', (req, res) => {
 })
 
 app.get('/completed', (req, res) => {
+    var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -346,6 +350,7 @@ app.get('/completed', (req, res) => {
 })
 
 app.get('/cancelled', (req, res) => {
+    var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -367,6 +372,7 @@ app.get('/cancelled', (req, res) => {
 // *USER APIs
 
 app.post('/updateuser', (req, res) => {
+    var sess = req.session;
     if (sess.authenticated) {
         userInfo = req.body;
         // todo
