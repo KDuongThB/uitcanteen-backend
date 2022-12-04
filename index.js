@@ -330,8 +330,8 @@ app.get('/completed', (req, res) => {
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
-        LEFT JOIN invoice ON invoice.orderId=order_detail.orderId \
-        WHERE statusOrderId = 1 OR statusOrderId = 2 AND ordr.userId = ?',
+        LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
+        WHERE (statusOrderId = 1 OR statusOrderId = 2) AND ordr.userId = ?',
             sess.user.userId,
             (err, rows, fields) => {
                 if (err) {
