@@ -150,7 +150,12 @@ app.post("/login", (req, res) => {
                     sess.authenticated = true;
                     userData.password = null;
                     sess.user = userData;
-                    res.send(sess.user);
+                    req.session.save(function (err) {
+                        if (err) {
+                            console.log(err); return (err);
+                        }
+                    })
+                    res.send({ user: sess.user });
                 }
                 else {
                     res.status(401).send({ message: "Wrong password" });
@@ -161,11 +166,7 @@ app.post("/login", (req, res) => {
             };
         });
     }
-    req.session.save(function (err) {
-        if (err) {
-            console.log(err); return (err);
-        }
-    })
+
 });
 
 app.get('/logout', (req, res) => {
