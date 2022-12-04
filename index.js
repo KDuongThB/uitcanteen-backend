@@ -174,7 +174,7 @@ app.get('/user', (req, res) => {
         res.send({ message: "not logged in" })
 })
 
-// MENU APIs
+// *MENU APIs
 
 app.get('/menu', (req, res) => {
     db.query('SELECT * from dish WHERE 1', (err, result) => {
@@ -289,7 +289,7 @@ app.get('/allorders',
     (req, res) => {
         db.query('SELECT * FROM ordr \
         LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
-        LEFT JOIN invoice ON invoice.orderId=order_detail.orderId',
+        LEFT JOIN invoice ON invoice.orderId=ordr.orderId',
             (err, rows, fields) => {
                 if (err) {
                     console.log(err)
@@ -329,9 +329,8 @@ app.get('/recentorder', (req, res) => {
 app.get('/completed', (req, res) => {
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
-        LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
-        WHERE (ordr.statusOrderId = 1 OR ordr.statusOrderId = 2) AND ordr.userId = ?',
+        WHERE ((ordr.statusOrderId = 1 OR ordr.statusOrderId = 2) AND ordr.userId = ?)',
             sess.user.userId,
             (err, rows, fields) => {
                 if (err) {
@@ -349,7 +348,6 @@ app.get('/completed', (req, res) => {
 app.get('/cancelled', (req, res) => {
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
-        LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
         WHERE statusOrderId = 3 AND ordr.userId = ?',
             sess.user.userId,
