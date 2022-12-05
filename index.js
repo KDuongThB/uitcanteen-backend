@@ -70,7 +70,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
-
     var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
@@ -82,7 +81,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    sess = req.session;
+    var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -124,9 +123,11 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    // req.session.reload(function(err) {
-    //     // session updated
-    //   })
+    req.session.reload(function (err) {
+        if (err)
+            throw (err)
+        // session updated
+    })
     var sess = req.session;
     // sess = req.session;
     const loginData = {
@@ -231,59 +232,58 @@ app.get('/ingredient', (req, res) => {
 
 // *ORDER APIs
 
-app.post('/sendorder',
-    (req, res) => {
-        var sess = req.session;
-        if (sess.authenticated && sess.user) {
-            let orderDetails = req.body;
-            let items = JSON.parse(orderDetails.items)
+app.post('/sendorder', (req, res) => {
+    var sess = req.session;
+    if (sess.authenticated && sess.user) {
+        let orderDetails = req.body;
+        let items = JSON.parse(orderDetails.items)
 
-            console.log(orderDetails)
-            // orderDetails.items = items;
-            console.log(items);
-            db.query("INSERT INTO ordr (userId,statusOrderId) VALUES (?, ?)",
-                [orderDetails.userId, 2],
-                (err, result) => {
-                    if (err) {
-                        console.log(err)
-                        res.send({ message: "cannot take order", err: err })
+        console.log(orderDetails)
+        // orderDetails.items = items;
+        console.log(items);
+        db.query("INSERT INTO ordr (userId,statusOrderId) VALUES (?, ?)",
+            [orderDetails.userId, 2],
+            (err, result) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ message: "cannot take order", err: err })
+                }
+                if (result) {
+                    var orderId = result.insertId;
+                    let total = 25000;
+                    if (orderDetails.cost == "30.000vnd")
+                        total = 30000;
+                    let invoiceDetails = {
+                        userId: orderDetails.userId,
+                        orderId: orderId,
+                        total: total,
+                        paymentId: parseInt(orderDetails.payMethod)
                     }
-                    if (result) {
-                        var orderId = result.insertId;
-                        let total = 25000;
-                        if (orderDetails.cost == "30.000vnd")
-                            total = 30000;
-                        let invoiceDetails = {
-                            userId: orderDetails.userId,
-                            orderId: orderId,
-                            total: total,
-                            paymentId: parseInt(orderDetails.payMethod)
-                        }
-                        db.query("INSERT INTO invoice (userId, orderId, total, paymentId) VALUES (?, ? ,? ,?)",
-                            [invoiceDetails.userId, invoiceDetails.orderId, invoiceDetails.total, invoiceDetails.paymentId], (err, result) => {
-                                if (err) {
-                                    console.log(err)
-                                    res.send({ message: "cannot take order", err: err })
-                                }
-                            })
-                        console.log("order ID: " + orderId)
-                        for (let i = 0; i < items.length; i++) {
-                            console.log(items[i]);
-                            db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)", [orderId, items[i].id, items[i].quantity], (err, result) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.send({ message: "cannot take order", err: err })
-                                }
-                            })
-                        }
+                    db.query("INSERT INTO invoice (userId, orderId, total, paymentId) VALUES (?, ? ,? ,?)",
+                        [invoiceDetails.userId, invoiceDetails.orderId, invoiceDetails.total, invoiceDetails.paymentId], (err, result) => {
+                            if (err) {
+                                console.log(err)
+                                res.send({ message: "cannot take order", err: err })
+                            }
+                        })
+                    console.log("order ID: " + orderId)
+                    for (let i = 0; i < items.length; i++) {
+                        console.log(items[i]);
+                        db.query("INSERT INTO order_detail (orderId, dishId, quantity) VALUES (?, ?, ?)", [orderId, items[i].id, items[i].quantity], (err, result) => {
+                            if (err) {
+                                console.log(err);
+                                res.send({ message: "cannot take order", err: err })
+                            }
+                        })
+                    }
 
-                        res.send({ message: "order taken!", orderId: orderId })
-                    }
-                })
-        } else {
-            res.status(401).send({ message: "Not logged in" })
-        }
-    })
+                    res.send({ message: "order taken!", orderId: orderId })
+                }
+            })
+    } else {
+        res.status(401).send({ message: "Not logged in" })
+    }
+})
 
 app.get('/allorders',
     (req, res) => {
