@@ -5,35 +5,19 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const e = require('express');
 
 const app = express();
 
 const mysqlStore = require('express-mysql-session')(session);
 
-let db, sessionStore;
+let db;
 if (process.env.JAWSDB_URL) {
     db = mysql.createPool(process.env.JAWSDB_URL);
     // sessionStore = new mysqlStore(process.env.JAWSDB_URL)
     db.multipleStatements = true;
     db.connectionLimit = 10;
 }
-
-else {
-    db = mysql.createConnection({
-        user: 'root',
-        host: 'localhost',
-        port: '3306',
-        password: '',
-        database: 'uitcanteen'
-    })
-}
-
-// var corsOptions = {
-//     origin: "*",
-//     credentials: true
-// }
-
-// app.use(cors())
 
 app.use(function (req, res, next) {
 
@@ -56,11 +40,10 @@ app.use(session({
     // store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
-        sameSite: true,
+        sameSite: 'none',
         secure: false,
         httpOnly: false
     },
-
 })
 );
 
@@ -68,30 +51,42 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
 var sess = {};
 
-// LOGIN APIs
+// *LOGIN APIs
 
 app.get('/', (req, res) => {
-    if (sess.authenticated)
+    // req.session.reload(function (err) {
+    //     // session updated
+    //     if (err) {
+    //         res.send({ err: err })
+    //     }
+    // })
+    // var sess = req.session;
+    if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
-    else
-        res.send({ loggedIn: false })
+    else {
+        sess.user = 'none';
+        res.send({ loggedIn: false, user: sess.user })
+    }
+
 });
 
 app.get("/login", (req, res) => {
     // sess = req.session;
-    if (sess.authenticated)
+    if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
-    else
-        res.send({ loggedIn: false })
+    else {
+        sess.user = 'none';
+        res.send({ loggedIn: false, user: sess.user })
+    }
 });
 
 app.post("/register", (req, res) => {
-    // sess = req.session;
-    if (sess.authenticated)
+    // var sess = req.session;
+    if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
         const email = req.body.username;
@@ -122,12 +117,16 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+    // req.session.reload(function(err) {
+    //     // session updated
+    //   })
+    // var sess = req.session;
     sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
     };
-    if (sess.authenticated) {
+    if (sess.authenticated && sess.user) {
         res.send({ loggedIn: true, user: sess.user })
     }
     else {
@@ -143,7 +142,12 @@ app.post("/login", (req, res) => {
                     sess.authenticated = true;
                     userData.password = null;
                     sess.user = userData;
-                    res.send(req.session.user);
+                    req.session.save(function (err) {
+                        if (err) {
+                            console.log(err); return (err);
+                        }
+                    })
+                    res.send({ user: sess.user });
                 }
                 else {
                     res.status(401).send({ message: "Wrong password" });
@@ -154,11 +158,6 @@ app.post("/login", (req, res) => {
             };
         });
     }
-    req.session.save(function (err) {
-        if (err) {
-            console.log(err); return (err);
-        }
-    })
 });
 
 app.get('/logout', (req, res) => {
@@ -167,14 +166,7 @@ app.get('/logout', (req, res) => {
     res.send({ message: "you have logged out!" })
 })
 
-app.get('/user', (req, res) => {
-    if (sess.authenticated && sess.user)
-        res.send({ user: sess.user });
-    else
-        res.send({ message: "not logged in" })
-})
-
-// MENU APIs
+// *MENU APIs
 
 app.get('/menu', (req, res) => {
     db.query('SELECT * from dish WHERE 1', (err, result) => {
@@ -230,11 +222,12 @@ app.get('/ingredient', (req, res) => {
     })
 })
 
-// ORDER APIs
+// *ORDER APIs
 
 app.post('/sendorder',
     (req, res) => {
-        if (sess.authenticated) {
+        // var sess = req.session;
+        if (sess.authenticated && sess.user) {
             let orderDetails = req.body;
             let items = JSON.parse(orderDetails.items)
 
@@ -287,7 +280,9 @@ app.post('/sendorder',
 
 app.get('/allorders',
     (req, res) => {
-        db.query('SELECT * FROM ordr LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId',
+        db.query('SELECT * FROM ordr \
+        LEFT JOIN order_detail ON ordr.orderId=order_detail.orderId \
+        LEFT JOIN invoice ON invoice.orderId=ordr.orderId',
             (err, rows, fields) => {
                 if (err) {
                     console.log(err)
@@ -307,27 +302,108 @@ app.get('/allorders',
         // res.send({ orderList: orderList, orderDetails: orderDetails });
     });
 
+
+
 app.get('/recentorder', (req, res) => {
-    db.query('SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1', (err, result) => {
-        if (err) {
-            console.log(err)
-            res.send({ err: err })
-        }
-        if (result) {
-            console.log(result)
-            var orderId = result[0].orderId;
-            res.send({orderId})
-        }
-    })
+    db.query('SELECT * FROM ordr ORDER BY orderId DESC LIMIT 1',
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                var orderId = result[0].orderId;
+                res.send({ orderId })
+            }
+        })
 })
 
-// USER APIs
+app.get('/completed', (req, res) => {
+    // var sess = req.session;
+    if (sess.authenticated && sess.user.userId) {
+        db.query('SELECT * FROM ordr \
+        LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
+        WHERE ((ordr.statusOrderId = 1 OR ordr.statusOrderId = 2) AND ordr.userId = ?)',
+            sess.user.userId,
+            (err, rows, fields) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ err: err })
+                }
+                if (rows)
+                    res.send({ completedOrders: rows });
+            })
+    } else {
+        res.status(401).send({ message: "not logged in" })
+    }
+})
+
+app.get('/cancelled', (req, res) => {
+    // var sess = req.session;
+    if (sess.authenticated && sess.user.userId) {
+        db.query('SELECT * FROM ordr \
+        LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
+        WHERE statusOrderId = 3 AND ordr.userId = ?',
+            sess.user.userId,
+            (err, rows, fields) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ err: err })
+                }
+                if (rows)
+                    res.send({ cancelledOrders: rows });
+            })
+    } else {
+        res.status(401).send({ message: "not logged in" })
+    }
+})
+
+// *USER APIs
+app.get('/user', (req, res) => {
+    // var sess = req.session;
+    if (sess.authenticated && sess.user)
+        res.send({ user: sess.user });
+    else
+        res.send({ message: "not logged in" })
+})
 
 app.post('/updateuser', (req, res) => {
-    if (sess.authenticated) {
-        userInfo = req.body;
-        // todo
-        res.send({ message: "UPDATE, PEOPLE! UPDATE!" })
+    // var sess = req.session;
+    if (sess.authenticated && sess.user) {
+        var data = Object.keys(req.body)[0];
+        var userInfo = JSON.parse(data);
+        console.log(userInfo)
+        var userId = userInfo.userId;
+        var names = userInfo.fullName.split(' ');
+        var lastName = names[0];
+        var firstName = names[1] + " " + names[2];
+        var mobile = userInfo.phoneNumber;
+        var studentId = parseInt(userInfo.studentId);
+        console.log(lastName, "\n", firstName, "\n", mobile, "\n", studentId);
+        db.query('UPDATE usr \
+        SET lastName = ?, firstName = ?, mobile = ?, studentId = ? \
+        WHERE userId = ?',
+            [lastName, firstName, mobile, studentId, userId],
+            (err, result) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ message: "cannot update", err: err })
+                }
+                if (result) {
+                    db.query('SELECT * FROM usr WHERE userId = ?', userId,
+                        (err, result) => {
+                            if (err) {
+                                console.log(err)
+                                res.send({ message: "cannot update", err: err })
+                            }
+                            if (result.length > 0) {
+                                res.send({ message: "UPDATE, PEOPLE! UPDATE!", user: result[0] })
+                            }
+
+                        })
+                }
+            })
     }
     else {
         res.status(401).send({ message: "not logged in" });
