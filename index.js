@@ -13,17 +13,17 @@ const mysqlStore = require('express-mysql-session')(session);
 
 let db;
 if (process.env.JAWSDB_URL) {
-    // const options = {
-    //     host: process.env.DB_HOST,
-    //     port: process.env.DB_PORT,
-    //     user: process.env.DB_USER,
-    //     password: process.env.DB_PASSWD,
-    //     database: process.env.DB_MAIN
-    // }
+    const options = {
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWD,
+        database: process.env.DB_MAIN
+    }
     db = mysql.createPool(process.env.JAWSDB_URL);
     db.multipleStatements = true;
     db.connectionLimit = 10;
-    sessionStore = new mysqlStore({}, db);
+    sessionStore = new mysqlStore(options);
 }
 
 app.use(function (req, res, next) {
