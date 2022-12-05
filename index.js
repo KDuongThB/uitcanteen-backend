@@ -104,7 +104,7 @@ app.post("/register", (req, res) => {
 
             if (result.length > 0) {
                 console.log(result);
-                res.send({ message: "Email already registered" });
+                res.send({ message: "Email already registered", code: 0 });
             }
             else {
                 db.query("INSERT INTO usr (email, password) VALUES (?,?)",
@@ -113,7 +113,7 @@ app.post("/register", (req, res) => {
                         if (err) { console.log(err) };
                         if (result) {
                             console.log(result);
-                            res.send({ message: "Registered successfully!" });
+                            res.send({ message: "Registered successfully!", code:1 });
                         };
                     })
             }
