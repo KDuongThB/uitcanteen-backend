@@ -13,35 +13,47 @@ const mysqlStore = require('express-mysql-session')(session);
 
 let db;
 if (process.env.JAWSDB_URL) {
+    // const options = {
+    //     host: process.env.DB_HOST,
+    //     port: process.env.DB_PORT,
+    //     user: process.env.DB_USER,
+    //     password: process.env.DB_PASSWD,
+    //     database: process.env.DB_MAIN
+    // }
     db = mysql.createPool(process.env.JAWSDB_URL);
-    // sessionStore = new mysqlStore(process.env.JAWSDB_URL)
     db.multipleStatements = true;
     db.connectionLimit = 10;
+    sessionStore = new mysqlStore({}, db);
 }
 
 app.use(function (req, res, next) {
 
-    var allowedDomains = ['http://127.0.0.1:5173', 'http://localhost:5173', 'https://canteen-uit.netlify.app', 'https://uit-canteen-admin.netlify.app', 'http:://localhost:3000'];
+    var allowedDomains = [
+        'http://127.0.0.1:5173',
+        'http://localhost:5173',
+        'https://canteen-uit.netlify.app',
+        'https://uit-canteen-admin.netlify.app',
+        'http://localhost:3000'
+    ];
     var origin = req.headers.origin;
     if (allowedDomains.indexOf(origin) > -1) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
     res.setHeader('Access-Control-Allow-Credentials', true);
-
     next();
 })
 
 app.use(session({
     name: "uit_sess",
-    secret: "abcxyz",
+    secret: "this is not a secret",
     resave: false,
     saveUninitialized: false,
-    // store: sessionStore,
+    store: sessionStore,
     cookie: {
         maxAge: 8 * 60 * 60 * 1000,
         sameSite: 'none',
-        secure: false,
+        secure: true,
         httpOnly: false
     },
 })
@@ -53,18 +65,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use(cookieParser());
 
-var sess = {};
+// var sess = {};
 
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
-    // req.session.reload(function (err) {
-    //     // session updated
-    //     if (err) {
-    //         res.send({ err: err })
-    //     }
-    // })
-    // var sess = req.session;
+
+    var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -75,7 +82,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    // sess = req.session;
+    sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -85,7 +92,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    // var sess = req.session;
+    var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -108,7 +115,7 @@ app.post("/register", (req, res) => {
                         if (err) { console.log(err) };
                         if (result) {
                             console.log(result);
-                            res.send({ message: "Registered successfully!", code:1 });
+                            res.send({ message: "Registered successfully!", code: 1 });
                         };
                     })
             }
@@ -120,8 +127,8 @@ app.post("/login", (req, res) => {
     // req.session.reload(function(err) {
     //     // session updated
     //   })
-    // var sess = req.session;
-    sess = req.session;
+    var sess = req.session;
+    // sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
@@ -226,7 +233,7 @@ app.get('/ingredient', (req, res) => {
 
 app.post('/sendorder',
     (req, res) => {
-        // var sess = req.session;
+        var sess = req.session;
         if (sess.authenticated && sess.user) {
             let orderDetails = req.body;
             let items = JSON.parse(orderDetails.items)
@@ -320,7 +327,7 @@ app.get('/recentorder', (req, res) => {
 })
 
 app.get('/completed', (req, res) => {
-    // var sess = req.session;
+    var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -340,7 +347,7 @@ app.get('/completed', (req, res) => {
 })
 
 app.get('/cancelled', (req, res) => {
-    // var sess = req.session;
+    var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -361,7 +368,7 @@ app.get('/cancelled', (req, res) => {
 
 // *USER APIs
 app.get('/user', (req, res) => {
-    // var sess = req.session;
+    var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ user: sess.user });
     else
@@ -369,7 +376,7 @@ app.get('/user', (req, res) => {
 })
 
 app.post('/updateuser', (req, res) => {
-    // var sess = req.session;
+    var sess = req.session;
     if (sess.authenticated && sess.user) {
         var data = Object.keys(req.body)[0];
         var userInfo = JSON.parse(data);
