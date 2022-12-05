@@ -65,12 +65,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use(cookieParser());
 
-// var sess = {};
+var sess = {};
 
 // *LOGIN APIs
 
 app.get('/', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -81,7 +81,7 @@ app.get('/', (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -91,7 +91,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ loggedIn: true, user: sess.user })
     else {
@@ -123,13 +123,13 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    req.session.reload(function (err) {
-        if (err)
-            throw (err)
-        // session updated
-    })
-    var sess = req.session;
-    // sess = req.session;
+    // req.session.reload(function (err) {
+    //     if (err)
+    //         throw (err)
+    //     // session updated
+    // })
+    // var sess = req.session;
+    sess = req.session;
     const loginData = {
         email: req.body.username,
         password: req.body.password,
@@ -137,6 +137,7 @@ app.post("/login", (req, res) => {
     if (sess.authenticated && sess.user) {
         res.send({ loggedIn: true, user: sess.user })
     }
+
     else {
         db.query('SELECT * FROM usr WHERE email = ?', loginData.email, (err, result) => {
             if (err) {
@@ -154,8 +155,8 @@ app.post("/login", (req, res) => {
                         if (err) {
                             console.log(err); return (err);
                         }
+                        res.send({ user: sess.user });
                     })
-                    res.send({ user: sess.user });
                 }
                 else {
                     res.status(401).send({ message: "Wrong password" });
@@ -233,7 +234,7 @@ app.get('/ingredient', (req, res) => {
 // *ORDER APIs
 
 app.post('/sendorder', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user) {
         let orderDetails = req.body;
         let items = JSON.parse(orderDetails.items)
@@ -327,7 +328,7 @@ app.get('/recentorder', (req, res) => {
 })
 
 app.get('/completed', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -347,7 +348,7 @@ app.get('/completed', (req, res) => {
 })
 
 app.get('/cancelled', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user.userId) {
         db.query('SELECT * FROM ordr \
         LEFT JOIN invoice ON invoice.orderId=ordr.orderId \
@@ -368,7 +369,7 @@ app.get('/cancelled', (req, res) => {
 
 // *USER APIs
 app.get('/user', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user)
         res.send({ user: sess.user });
     else
@@ -376,7 +377,7 @@ app.get('/user', (req, res) => {
 })
 
 app.post('/updateuser', (req, res) => {
-    var sess = req.session;
+    // var sess = req.session;
     if (sess.authenticated && sess.user) {
         var data = Object.keys(req.body)[0];
         var userInfo = JSON.parse(data);
